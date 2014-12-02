@@ -1,0 +1,25 @@
+runs             				      = 1
+generations                           = 500
+population-size                       = 50000
+
+
+crossover-probability                 = 0.9
+mutation-probability                  = 0.3
+
+crossover-operator               	  = operators.crossover.OrderedCrossover
+mutation-operator                	  = operators.mutation.Inversion
+
+
+chromosome-representation			  = chromosome.OrderBasedInteger
+
+fitness-function                      = fitness.singleObjective.Simple
+selection-operator                    = operators.selection.TournamentSelection
+tournament-size                       = 3
+
+problem								  = problems.TSP.TSPproblem
+input-folder						  = input/TSP
+input-files-extension				  = .tsp			
+
+stat-out                              = output/TSP
+
+;processors							  = 4 

@@ -1,0 +1,14 @@
+x_1,sunny,hot,high,weak,no
+x_2,sunny,hot,high,strong,no
+x_3,overcast,hot,high,weak,yes
+x_4,rain,mild,high,weak,yes
+x_5,rain,cold,normal,weak,yes
+x_6,rain,cold,normal,strong,no
+x_7,overcast,cold,normal,strong,yes
+x_8,sunny,mild,high,weak,no
+x_9,sunny,cold,normal,weak,yes
+x_10,rain,mild,normal,weak,yes
+x_11,sunny,mild,normal,strong,yes
+x_12,overcast,mild,high,strong,yes
+x_13,overcast,hot,normal,weak,yes
+x_14,rain,mild,high,strong,yes
