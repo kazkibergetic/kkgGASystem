@@ -19,7 +19,7 @@ import problems.ProblemInterface;
  * @author or13uw
  *
  */
-public class TSPproblem implements ProblemInterface {
+public class Problem implements ProblemInterface {
 
 	public static ArrayList<Points> points = new ArrayList<Points> ();
 	
@@ -491,7 +491,7 @@ public class TSPproblem implements ProblemInterface {
 		}
 		
 		
-		public double evaluateFitness(ChromosomeRepresentationInterface  chromosome) {
+		public String evaluateFitness(ChromosomeRepresentationInterface  chromosome) {
 			// TODO Auto-generated method stub
 			
 			
@@ -510,7 +510,7 @@ public class TSPproblem implements ProblemInterface {
 			
 			
 			//Random rand = new Random();
-			return totalDistance;
+			return String.valueOf(totalDistance);
 		}
 
 		/* (non-Javadoc)

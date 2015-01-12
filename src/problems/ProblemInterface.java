@@ -42,5 +42,5 @@ public interface ProblemInterface  {
      * @param chromosome : supplied by GA system. permutation if attributes to find reduct
      * @return fitness value of the provided chromosome
      */	
-	public double evaluateFitness(ChromosomeRepresentationInterface  chromosome);
+	public String evaluateFitness(ChromosomeRepresentationInterface  chromosome);
 }

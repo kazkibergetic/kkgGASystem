@@ -52,6 +52,7 @@ public class ResultOutput {
 	private void writeIndividual(RunEvolution r)
 	{
 		writer.println(r.getBestIndividual().getChromosome().toString());
+		writer.println(r.getBestIndividual().getMetaData());
 	}
 	
 	public void finish()

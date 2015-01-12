@@ -11,4 +11,4 @@ x_10,rain,mild,normal,weak,yes
 x_11,sunny,mild,normal,strong,yes
 x_12,overcast,mild,high,strong,yes
 x_13,overcast,hot,normal,weak,yes
-x_14,rain,mild,high,strong,yes
+x_14,rain,mild,high,strong,no

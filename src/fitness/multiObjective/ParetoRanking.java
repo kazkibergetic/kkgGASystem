@@ -9,7 +9,10 @@ package fitness.multiObjective;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
+import params.ClassInitialization;
+import params.Parameters;
 import chromosome.ChromosomeRepresentationInterface;
 
 /**
@@ -18,14 +21,15 @@ import chromosome.ChromosomeRepresentationInterface;
  */
 public class ParetoRanking implements MultiObjective{
 
+	private static ArrayList<Double> rankResults;
+	private static ArrayList<String> ranks = new ArrayList<String>();
+	ClassInitialization ci = new ClassInitialization();
+
+	private static int counter = 0;
 	/* (non-Javadoc)
 	 * @see fitness.FitnessEvaluationInterface#evaluateFitness(chromosome.ChromosomeRepresentationInterface)
 	 */
-	@Override
-	public double evaluateFitness(ChromosomeRepresentationInterface chromosome) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
     
     
     
@@ -41,9 +45,9 @@ public class ParetoRanking implements MultiObjective{
      * 7,800  #Rank:2
      * 9,500  #Rank:2
      */
-	/*
+	
     @SuppressWarnings("unchecked")
-	public ArrayList<Double> paretoCalculations(ArrayList<String> ranks, int popSize)
+	public ArrayList<Double> paretoCalculations()
     {
        ArrayList<String> rankedLevels = new ArrayList<String>();
        ArrayList<String> rankCopy = (ArrayList<String>) ranks.clone();
@@ -55,12 +59,12 @@ public class ParetoRanking implements MultiObjective{
        Collections.sort(ranks); //sort to arrange first objective in ascending manner : NB: small values are best
        //System.out.println("#SORTED");
        //replace with a more efficient later
-       for(int i=0; i<popSize;i++)
+       for(int i=0; i<Parameters.getPopulationSize();i++)
        {
-    	   selectionRank.add((double)Constants.DEFAULT_WORSE_FITNESS); //fill with dump values to enable set in second loop
+    	   selectionRank.add(Double.POSITIVE_INFINITY); //fill with dump values to enable set in second loop
        }
        
-       for(int i=0; i<popSize;i++)
+       for(int i=0; i<Parameters.getPopulationSize();i++)
        {
          ArrayList<Double> ranked = new ArrayList<>();  //keep records of currently ranked level. eg. rank 0, 1, etc
          //ranked.add(Double.parseDouble(ranks2.get(0).split(",")[1]));
@@ -68,7 +72,7 @@ public class ParetoRanking implements MultiObjective{
          { 
              String[] sp = ranks.get(j).split(","); // ranks.add("2,1000")
              //check if second objective exists in currently ranked values
-             if(GenerateMask.isExistIndexPareto(ranked,Double.parseDouble(sp[1])))
+             if(isExistIndexPareto(ranked,Double.parseDouble(sp[1])))
              {
                  ranked.add((Double.parseDouble(sp[1])));
                  //ranked.get(j);
@@ -80,7 +84,7 @@ public class ParetoRanking implements MultiObjective{
                  //System.out.println(sp[0]+","+sp[1]+" #Rank:"+rank);
                  //set appropriate indexes with ranked values
                  //selectionRank.add((double) rank);
-                 int ind = GenerateMask.returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]);
+                 int ind = returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]);
                  selectionRank.set(ind,(double) rank);
                  
                  //selectionRank.set(GenerateMask.returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]),(double) rank);
@@ -106,8 +110,93 @@ public class ParetoRanking implements MultiObjective{
        return selectionRank;
        
     }
-    */
     
+    private boolean isExistIndexPareto(ArrayList<Double> c1, Double value)
+    { 
+    	boolean b = true;
+       
+       for (int i = 0; i < c1.size(); i++)
+       {  
+         b = b && (value<=c1.get(i));
+       } 
+      return b;
+    }
     
+    private int returnIndexS(ArrayList<Double> parent,ArrayList<String> c1, String value)
+    {
+       for (int i = 0; i < c1.size(); i++)
+       {
+           if (value.equals(c1.get(i)) && (parent.get(i)== Double.POSITIVE_INFINITY) ) //ensure index doesnt already exist
+           {  
+               return i;
+           }
+       }  
+      return -1;
+    }
     
+    public  void preEvaluateFitness() {
+    	counter = 0;
+    	
+		
+	}
+
+
+    
+	@Override
+	public double evaluateFitness(ChromosomeRepresentationInterface chromosome) throws Exception {
+		// TODO Auto-generated method stub
+		String result;
+		result = ci.getProblem().evaluateFitness(chromosome);
+		
+		if(result.split(",").length>1)
+		{
+							
+			ranks.add(result);
+			chromosome.setMetaData(result);
+			//System.out.println(chromosome.getMetaData());
+			//ranks.add(result);
+		}
+		else
+		{
+			throw new Exception("Fitness value is in a wrong format!");
+		}
+		
+		return Double.POSITIVE_INFINITY;
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see fitness.FitnessEvaluationInterface#postEvaluateFitness(java.util.ArrayList)
+	 */
+	@Override
+	public void postEvaluateFitness(
+			ArrayList<ChromosomeRepresentationInterface> chromosomes) throws Exception {
+		// TODO Auto-generated method stub
+		
+		rankResults = new ArrayList<Double>();
+		ArrayList<String> ranksCopy = new ArrayList<String>(ranks);
+    	//chromosome.setChromosome(TSPproblem.getOptimalTour());
+    	if(ranks.size() == Parameters.getPopulationSize())
+		{
+    		rankResults = paretoCalculations();
+		}
+		else
+		{
+			throw new Exception("Number of ranks is not equal to number of populations.");
+		}
+		
+		for(int i=0; i< chromosomes.size(); i++)
+		{
+			
+			int position = ranksCopy.indexOf(chromosomes.get(i).getMetaData());
+			
+			//System.out.println(position + " >>> "+ i);				
+			chromosomes.get(i).setFitness(rankResults.get(position));
+		
+			
+		}
+		
+		
+	}
 }

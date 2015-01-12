@@ -6,12 +6,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 import output.DisplayInfo;
-import chromosome.ChromosomeRepresentationInterface;
 import exceptions.ParametersInitializationException;
-import fitness.FitnessEvaluationInterface;
-import operators.crossover.CrossoverInterface;
-import operators.mutation.MutationInterface;
-import operators.selection.SelectionInterface;
+
 
 public class ParametersInitialization extends Parameters {
 
@@ -44,66 +40,66 @@ public class ParametersInitialization extends Parameters {
 			System.out
 					.println("==================================================");
 
-			if (this.properties.getProperty(InputParametersNames.RUNS) == null) {
+			if (ParametersInitialization.properties.getProperty(InputParametersNames.RUNS) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.RUNS);
 			}
-			runs = Integer.parseInt(this.properties.getProperty(
+			runs = Integer.parseInt(ParametersInitialization.properties.getProperty(
 					InputParametersNames.RUNS).trim());
 
 			DisplayInfo.displayInitialization(InputParametersNames.RUNS,
-					this.properties.getProperty(InputParametersNames.RUNS));
+					ParametersInitialization.properties.getProperty(InputParametersNames.RUNS));
 
-			if (this.properties.getProperty(InputParametersNames.GENERATIONS) == null) {
+			if (ParametersInitialization.properties.getProperty(InputParametersNames.GENERATIONS) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.GENERATIONS);
 			} else {
-				generations = Integer.parseInt(this.properties.getProperty(
+				generations = Integer.parseInt(ParametersInitialization.properties.getProperty(
 						InputParametersNames.GENERATIONS).trim());
 
 				DisplayInfo.displayInitialization(
-						InputParametersNames.GENERATIONS, this.properties
+						InputParametersNames.GENERATIONS, ParametersInitialization.properties
 								.getProperty(InputParametersNames.GENERATIONS));
 			}
 
-			if (this.properties
+			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.POPULATION_SIZE) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.POPULATION_SIZE);
 			} else {
-				population_size = Integer.parseInt(this.properties.getProperty(
+				population_size = Integer.parseInt(ParametersInitialization.properties.getProperty(
 						InputParametersNames.POPULATION_SIZE).trim());
 
 				DisplayInfo
 						.displayInitialization(
 								InputParametersNames.POPULATION_SIZE,
-								this.properties
+								ParametersInitialization.properties
 										.getProperty(InputParametersNames.POPULATION_SIZE));
 			}
 
-			if (this.properties
+			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.TOURNAMENT_SIZE) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.TOURNAMENT_SIZE);
 			} else {
-				tournament_size = Integer.parseInt(this.properties.getProperty(
+				tournament_size = Integer.parseInt(ParametersInitialization.properties.getProperty(
 						InputParametersNames.TOURNAMENT_SIZE).trim());
 
 				DisplayInfo
 						.displayInitialization(
 								InputParametersNames.TOURNAMENT_SIZE,
-								this.properties
+								ParametersInitialization.properties
 										.getProperty(InputParametersNames.TOURNAMENT_SIZE));
 
 			}
-			if (this.properties
+			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.CROSSOVER_PROBABILITY) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.CROSSOVER_PROBABILITY);
 			} else {
 
 				crossover_probability = Double
-						.parseDouble(this.properties.getProperty(
+						.parseDouble(ParametersInitialization.properties.getProperty(
 								InputParametersNames.CROSSOVER_PROBABILITY)
 								.trim());
 
@@ -114,15 +110,15 @@ public class ParametersInitialization extends Parameters {
 				DisplayInfo
 						.displayInitialization(
 								InputParametersNames.CROSSOVER_PROBABILITY,
-								this.properties
+								ParametersInitialization.properties
 										.getProperty(InputParametersNames.CROSSOVER_PROBABILITY));
 			}
-			if (this.properties
+			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.MUTATION_PROBABILITY) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.MUTATION_PROBABILITY);
 			} else {
-				mutation_probability = Double.parseDouble(this.properties
+				mutation_probability = Double.parseDouble(ParametersInitialization.properties
 						.getProperty(InputParametersNames.MUTATION_PROBABILITY)
 						.trim());
 
@@ -133,17 +129,17 @@ public class ParametersInitialization extends Parameters {
 				DisplayInfo
 						.displayInitialization(
 								InputParametersNames.MUTATION_PROBABILITY,
-								this.properties
+								ParametersInitialization.properties
 										.getProperty(InputParametersNames.MUTATION_PROBABILITY));
 
 			}
 			
-			if (this.properties.getProperty(InputParametersNames.PROCESSORS) == null) {
+			if (ParametersInitialization.properties.getProperty(InputParametersNames.PROCESSORS) == null) {
 				processors = Runtime.getRuntime().availableProcessors()-1;
 			}
 			else
 			{
-				processors = Integer.parseInt(this.properties.getProperty(
+				processors = Integer.parseInt(ParametersInitialization.properties.getProperty(
 					InputParametersNames.PROCESSORS).trim());
 			}
 			DisplayInfo
@@ -151,30 +147,30 @@ public class ParametersInitialization extends Parameters {
 					InputParametersNames.PROCESSORS,
 					String.valueOf(processors));
 
-			if (this.properties.getProperty(InputParametersNames.INPUT_FOLDER) == null) {
+			if (ParametersInitialization.properties.getProperty(InputParametersNames.INPUT_FOLDER) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.INPUT_FOLDER);
 			} else {
-				input_folder = this.properties.getProperty(
+				input_folder = ParametersInitialization.properties.getProperty(
 						InputParametersNames.INPUT_FOLDER).trim();
 			}
 
-			if (this.properties
+			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.FILE_EXTENSION) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.FILE_EXTENSION);
 			} else {
-				file_extension = this.properties.getProperty(
+				file_extension = ParametersInitialization.properties.getProperty(
 						InputParametersNames.FILE_EXTENSION).trim();
 			}
 			
 			
-			if (this.properties
+			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.STATISTICS_OUTPUT) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.STATISTICS_OUTPUT);
 			} else {
-				stat_out = this.properties.getProperty(
+				stat_out = ParametersInitialization.properties.getProperty(
 						InputParametersNames.STATISTICS_OUTPUT).trim();
 			}
 			
@@ -187,31 +183,31 @@ public class ParametersInitialization extends Parameters {
 			DisplayInfo
 					.displayInitialization(
 							InputParametersNames.CROSSOVER_OPERATOR,
-							this.properties
+							ParametersInitialization.properties
 									.getProperty(InputParametersNames.CROSSOVER_OPERATOR));
 
 			DisplayInfo
 					.displayInitialization(
 							InputParametersNames.MUTATION_OPERATOR,
-							this.properties
+							ParametersInitialization.properties
 									.getProperty(InputParametersNames.MUTATION_OPERATOR));
 
 			DisplayInfo
 					.displayInitialization(
 							InputParametersNames.SELECTION_OPERATOR,
-							this.properties
+							ParametersInitialization.properties
 									.getProperty(InputParametersNames.SELECTION_OPERATOR));
 
 			DisplayInfo
 					.displayInitialization(
 							InputParametersNames.FITNESS_FUNCTION,
-							this.properties
+							ParametersInitialization.properties
 									.getProperty(InputParametersNames.FITNESS_FUNCTION));
 
 			DisplayInfo
 					.displayInitialization(
 							InputParametersNames.CHROMOSOME_REPRESENTATION,
-							this.properties
+							ParametersInitialization.properties
 									.getProperty(InputParametersNames.CHROMOSOME_REPRESENTATION));
 
 			/*

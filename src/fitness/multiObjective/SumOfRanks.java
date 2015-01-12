@@ -87,6 +87,21 @@ public class SumOfRanks implements MultiObjective{
 	 * @param run
 	 * @param generation
 	 */
-	
+	public void preEvaluateFitness() {
+	}
+
+	public void postEvaluateFitness() {
+	}
+
+
+	/* (non-Javadoc)
+	 * @see fitness.FitnessEvaluationInterface#postEvaluateFitness(java.util.ArrayList)
+	 */
+	@Override
+	public void postEvaluateFitness(
+			ArrayList<ChromosomeRepresentationInterface> chromosomes) {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

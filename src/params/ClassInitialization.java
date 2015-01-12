@@ -49,7 +49,7 @@ public class ClassInitialization extends ParametersInitialization{
 	*/
 	public CrossoverInterface getCrossoverOperator() {
 		CrossoverInterface crossover = null;
-		String className = super.properties
+		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.CROSSOVER_OPERATOR).trim();
 		try {
 
@@ -70,7 +70,7 @@ public class ClassInitialization extends ParametersInitialization{
 
 	public MutationInterface getMutationOperator() {
 		MutationInterface mutation = null;
-		String className = super.properties
+		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.MUTATION_OPERATOR).trim();
 		try {
 
@@ -91,7 +91,7 @@ public class ClassInitialization extends ParametersInitialization{
 
 	public SelectionInterface getSelectionOperator() {
 		SelectionInterface selection = null;
-		String className = super.properties
+		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.SELECTION_OPERATOR).trim();
 		try {
 
@@ -112,7 +112,7 @@ public class ClassInitialization extends ParametersInitialization{
 
 	public FitnessEvaluationInterface getFitnessEvaluationOperator() {
 		FitnessEvaluationInterface fitness = null;
-		String className = super.properties
+		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.FITNESS_FUNCTION).trim();
 		try {
 
@@ -134,7 +134,7 @@ public class ClassInitialization extends ParametersInitialization{
 	public ChromosomeRepresentationInterface getChromosomeRepresentation() {
 		ChromosomeRepresentationInterface chromosome = null;
 	
-		String className = super.properties
+		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.CHROMOSOME_REPRESENTATION).trim();
 		
 		try {
@@ -157,7 +157,7 @@ public class ClassInitialization extends ParametersInitialization{
 	public ProblemInterface getProblem() {
 		ProblemInterface problem = null;
 	
-		String className = super.properties
+		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.PROBLEM).trim();
 		
 		try {

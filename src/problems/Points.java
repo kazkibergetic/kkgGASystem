@@ -7,7 +7,7 @@ package problems;
  * @author or13uw
  *
  */
-public class Points extends PointsAbstract  {
+public class Points implements Comparable {
 
 	
 	public double x;
@@ -50,6 +50,36 @@ public class Points extends PointsAbstract  {
 	public int hashCode() {
 		return java.util.Objects.hashCode(this.id);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return String.valueOf(this.id);
+		
+	}
+
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Object obj) {
+		Points p = (Points) obj;
+
+		int returnValue = 0;
+		if(p.id > this.id)
+			returnValue =  -1;
+		if(p.id == this.id)
+			returnValue = 0 ;
+		if(p.id < this.id)
+			returnValue = 1;
+		
+		return returnValue;
+		
+	}
+	
 	
 	
 }

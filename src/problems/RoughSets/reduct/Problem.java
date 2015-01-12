@@ -1,7 +1,7 @@
 /**
  * 
  */
-package problems.reduct;
+package problems.RoughSets.reduct;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +15,6 @@ import chromosome.ChromosomeRepresentationInterface;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 
 import problems.Points;
 import problems.ProblemInterface;
@@ -24,7 +23,7 @@ import problems.ProblemInterface;
  * @author or13uw
  * 
  */
-public class ReductProblem implements ProblemInterface {
+public class Problem implements ProblemInterface {
 
 	/**
 	 * Dataset for a problem with all values
@@ -32,6 +31,11 @@ public class ReductProblem implements ProblemInterface {
 	private static Table<Integer, Integer, String> table;
 
 	private Map <Integer, String> hm = new HashMap<Integer, String>();
+	
+	private Table<Integer, Integer, String> workData;
+
+	private BufferedReader reader;
+	
 	/**
 	 * Points for GA System
 	 */
@@ -53,10 +57,11 @@ public class ReductProblem implements ProblemInterface {
 		numColumns = 0;
 		points = new ArrayList<Points>();
 		table = HashBasedTable.create();
+		hm = new HashMap<Integer, String>();
 		
 		File input = file;
 		try {
-			readReductDataSet(input);
+			readDataSet(input);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,8 +76,8 @@ public class ReductProblem implements ProblemInterface {
 	 * @param file
 	 *            : file to read dataset from
 	 */
-	private void readReductDataSet(File file) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
+	private void readDataSet(File file) throws IOException {
+		reader = new BufferedReader(new FileReader(file));
 
 		String line;
 		String[] items = new String[] {};
@@ -89,6 +94,7 @@ public class ReductProblem implements ProblemInterface {
 			row++;
 
 		}
+		reader.close();
 		numColumns = items.length;
 
 		createPoints();
@@ -105,7 +111,7 @@ public class ReductProblem implements ProblemInterface {
 		}
 
 	}
-	Table<Integer, Integer, String> workData;
+	
 	/**
 	 * checks of the specified set of attributes is a reduct
 	 * 
@@ -132,8 +138,7 @@ public class ReductProblem implements ProblemInterface {
 		for(int i=0; i< numRows; i++)
 		{
 			int hc = workData.row(i).hashCode();
-			//String rez1 = hm.get(hc);
-			//System.out.println(rez1);
+			
 			if(!hm.containsKey(hc))
 			{
 				hm.put(hc, table.get(i, numColumns - 1));
@@ -148,22 +153,7 @@ public class ReductProblem implements ProblemInterface {
 			}
 			
 		}
-		/*
-		for (int i = 0; i < numRows - 1; i++) {
-			for (int z = i + 1; z < numRows; z++) {
-				if (workData.row(i).equals(workData.row(z))) {
-
-					if (!table.get(i, numColumns - 1).equals(
-							table.get(z, numColumns - 1))) {
-						return false;
-					}
-
-				}
-
-			}
-		}
-		
-		*/
+	
 		
 		return true;
 	}
@@ -205,7 +195,7 @@ public class ReductProblem implements ProblemInterface {
 	 * @see problems.ProblemInterface#evaluateFitness()
 	 */
 	@Override
-	public double evaluateFitness(ChromosomeRepresentationInterface chromosome) {
+	public String evaluateFitness(ChromosomeRepresentationInterface chromosome) {
 
 		ArrayList<Points> reduct = this.findReduct(chromosome);
 
@@ -216,7 +206,7 @@ public class ReductProblem implements ProblemInterface {
 		  } System.out.println();
 		 
 	*/
-		return reduct.size();
+		return String.valueOf(reduct.size());
 	}
 
 	/*
@@ -228,7 +218,7 @@ public class ReductProblem implements ProblemInterface {
 	@Override
 	public ArrayList<Points> getPoints() {
 		// TODO Auto-generated method stub
-		return this.points;
+		return Problem.points;
 	}
 	
 

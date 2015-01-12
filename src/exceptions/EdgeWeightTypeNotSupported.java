@@ -1,12 +1,6 @@
-/**
- * 
- */
 package exceptions;
 
-/**
- * @author or13uw
- *
- */
+
 public class EdgeWeightTypeNotSupported extends Exception {
     
     /**

@@ -21,6 +21,10 @@ public interface FitnessEvaluationInterface {
 	/**
 	 * @param chromosome
 	 * @return
+	 * @throws Exception 
 	 */
-	double evaluateFitness(ChromosomeRepresentationInterface chromosome);
+	double evaluateFitness(ChromosomeRepresentationInterface chromosome) throws Exception;
+	public void preEvaluateFitness();
+
+	public void postEvaluateFitness(ArrayList<ChromosomeRepresentationInterface> chromosomes) throws Exception;
 }

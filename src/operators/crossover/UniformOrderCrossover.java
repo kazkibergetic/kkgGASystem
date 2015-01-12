@@ -8,7 +8,7 @@ import java.util.Random;
 
 import params.ClassInitialization;
 import chromosome.ChromosomeRepresentationInterface;
-import exceptions.ChromomesInequalityException;
+
 
 /**
  * @author or13uw

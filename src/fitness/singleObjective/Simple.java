@@ -3,11 +3,10 @@
  */
 package fitness.singleObjective;
 
-import java.util.Random;
+
+import java.util.ArrayList;
 
 import params.ClassInitialization;
-import problems.ProblemInterface;
-import problems.TSP.TSPproblem;
 import chromosome.ChromosomeRepresentationInterface;
 import fitness.FitnessEvaluationInterface;
 
@@ -17,7 +16,7 @@ import fitness.FitnessEvaluationInterface;
  */
 public class Simple implements FitnessEvaluationInterface{
 
-	
+		
 	/* (non-Javadoc)
 	 * @see fitness.FitnessEvaluationInterface#evaluateFitness(chromosome.ChromosomeRepresentationInterface)
 	 */
@@ -30,10 +29,34 @@ public class Simple implements FitnessEvaluationInterface{
 		
 		
 		//chromosome.setChromosome(TSPproblem.getOptimalTour());
-		double totalDistance = 0;
-		totalDistance = ci.getProblem().evaluateFitness(chromosome);
+		String result;
+		result = ci.getProblem().evaluateFitness(chromosome);
+		if(result.split(",").length==1)
+		{
+			return Double.parseDouble(result);
+		}
+		else
+		{
+			new Exception("Fitness value is in a wrong format!");
+		}
 		
-		return totalDistance;
+		return 0d;
+	}
+	
+	public  void preEvaluateFitness() {
+	}
+
+	public void postEvaluateFitness() {
+	}
+
+	/* (non-Javadoc)
+	 * @see fitness.FitnessEvaluationInterface#postEvaluateFitness(java.util.ArrayList)
+	 */
+	@Override
+	public void postEvaluateFitness(
+			ArrayList<ChromosomeRepresentationInterface> chromosomes) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

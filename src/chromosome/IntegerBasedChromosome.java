@@ -1,60 +1,75 @@
-/**
+/*********************************************************************************
+ * Copyright 2014 Oleg Rybkin
  * 
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *********************************************************************************/
 package chromosome;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Random;
 
-import params.Parameters;
 import params.ClassInitialization;
 import problems.ProblemInterface;
 
 
-
 /**
- * @author or13uw
- *
- */
-public class OrderBasedInteger implements ChromosomeRepresentationInterface{
+* KazKiberGetic GA System (kkgGA)
+* The IntegerBasedCgromosome implements the chromosome representation, where each gene is an integer.
+* For example, the chromosome could be [1,2,3,4,5,6,7,8,9] 
+*
+* @author  Oleg Rybkin, kazkibergetic@gmail.com
+* @version 1.0
+* @since   2014-08-31 
+*/
+public class IntegerBasedChromosome implements ChromosomeRepresentationInterface{
 
 	
+	//Each chromosome is an array of integers
 	ArrayList<Integer> chromosome;
-	double fitness=Double.MAX_VALUE;
+	
+	//Fitness value of the chromosome. The aim is to minimize fitness, so the fitness initialized to  infinity
+	double fitness=Double.POSITIVE_INFINITY;
+	
+	
 	private static  ClassInitialization ci = new ClassInitialization();
 	private static ProblemInterface problem = ci.getProblem();
-	
+	private String metadata=null;
 
+	
+	public void setMetaData(String meta)
+	{
+		metadata = meta;
+	}
+	public String getMetaData()
+	{
+		return metadata;
+	}
 
 	
 	@Override
 	public boolean isFeasible() {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException("The method is not implemented yet");
+		//return false;
 	}
 
 	/* (non-Javadoc)
+	 * Generates random Integer based chromosome using values, provided by problem interface. 
 	 * @see chromosome.ChromosomeRepresentationInterface#generateChromosome()
 	 */
 	@Override
 	public void generateChromosome() {
 		
-		/*Random rand = new Random();
-		while(chromosome.size() < Parameters.getChromosomeSize())
-		{
-			int toAdd = rand.nextInt(Parameters.getChromosomeSize()+1);
-			
-			if(!chromosome.contains(toAdd))
-			{
-				chromosome.add(toAdd);
-			}
-		}*/
-		
 		ArrayList<Integer> range = new ArrayList<Integer> ();
-		
-	//	System.out.println("SIZE"+problem.getSizeOfChromosome());
 		
 		for(int i=0; i<problem.getSizeOfChromosome(); i++)
 		{
@@ -62,17 +77,15 @@ public class OrderBasedInteger implements ChromosomeRepresentationInterface{
 		}
 				
 		Collections.shuffle(range);
-		
-		//this.setChromosome(range);
+				
 		this.chromosome = new ArrayList<Integer>(range);
-		//System.out.println(this.chromosome);
+		
 		
 	}
 
 	/* (non-Javadoc)
 	 * @see chromosome.ChromosomeRepresentationInterface#setChromosome(java.util.ArrayList)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setChromosome(ArrayList<Integer> newChromosome) {
 		this.chromosome = new ArrayList<Integer>(newChromosome);
@@ -138,6 +151,7 @@ public class OrderBasedInteger implements ChromosomeRepresentationInterface{
 	/* (non-Javadoc)
 	 * @see chromosome.ChromosomeRepresentationInterface#addAllGenes()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setAllGenes(ChromosomeRepresentationInterface ch) {
 	
@@ -157,6 +171,7 @@ public class OrderBasedInteger implements ChromosomeRepresentationInterface{
 	}
 
 	/* (non-Javadoc)
+	 * Initialize the Integer based chromosome with 0's
 	 * @see chromosome.ChromosomeRepresentationInterface#initializeDefailt()
 	 */
 	@Override
@@ -170,10 +185,6 @@ public class OrderBasedInteger implements ChromosomeRepresentationInterface{
 			
 		}
 	}
-	
-	
-
-
-	
+		
 
 }
