@@ -113,7 +113,7 @@ for i=1 to n+m do
 end
 return (B, X)
 ```
-where The functional dependency denotes as B =>(U) d
+where the functional dependency denoted as B =>(U) d
 
 B =>(U) d iff (∀a ∈ B )(∀x , y ∈ U )[a(x ) = a(y ) implies d (x ) = d (y )].
 
