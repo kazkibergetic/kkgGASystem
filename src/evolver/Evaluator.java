@@ -15,10 +15,11 @@
  *********************************************************************************/
 package evolver;
 
-import java.util.ArrayList;
-
-import params.ClassInitialization;
 import chromosome.ChromosomeRepresentationInterface;
+import params.ClassInitialization;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * KazKiberGetic GA System (kkgGA) The Evaluator implements concurrent fitness
@@ -40,7 +41,7 @@ public class Evaluator implements Runnable {
 	private ArrayList<ChromosomeRepresentationInterface> chromosomes = new ArrayList<ChromosomeRepresentationInterface>();
 	private ClassInitialization ci = new ClassInitialization();
 
-	public Evaluator(ArrayList<ChromosomeRepresentationInterface> ch) {
+	public Evaluator(List<ChromosomeRepresentationInterface> ch) {
 		chromosomes.addAll(ch);
 
 	}

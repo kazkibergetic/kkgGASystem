@@ -1,12 +1,12 @@
 /*********************************************************************************
  * Copyright 2014 Oleg Rybkin
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,22 +15,27 @@
  *********************************************************************************/
 package evolver;
 
-import java.util.ArrayList;
-import java.util.Random;
-
+import chromosome.ChromosomeRepresentationInterface;
 import operators.crossover.CrossoverInterface;
 import operators.mutation.MutationInterface;
 import operators.selection.SelectionInterface;
 import params.ClassInitialization;
 import params.Parameters;
-import chromosome.ChromosomeRepresentationInterface;
-import exceptions.ChromomesInequalityException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * KazKiberGetic GA System (kkgGA) The Population is responsible for creating
  * initial population for first generation, and creating all future generations
  * based on the previous population.
- * 
+ *
  * @author Oleg Rybkin, kazkibergetic@gmail.com
  * @version 1.0
  * @since 2014-08-31
@@ -38,289 +43,320 @@ import exceptions.ChromomesInequalityException;
 
 public class Population extends Thread {
 
-	private static ClassInitialization ci = new ClassInitialization();
+    private static ClassInitialization ci = new ClassInitialization();
 
-	// best fitness of the population
-	private double bestFitness;
+    // best fitness of the population
+    private double bestFitness;
 
-	// average fitness of the population
-	private double averageFitness;
+    // average fitness of the population
+    private double averageFitness;
 
-	// array of chromosomes in the population
-	protected ArrayList<ChromosomeRepresentationInterface> chromosomes;
+    // array of chromosomes in the population
+    protected List<ChromosomeRepresentationInterface> chromosomes;
 
-	// the fittest in the population
-	private ChromosomeRepresentationInterface bestIndividual;
+    // the fittest in the population
+    private ChromosomeRepresentationInterface bestIndividual;
+    private ExecutorService executorService;
 
-	Population() {
-		chromosomes = new ArrayList<ChromosomeRepresentationInterface>();
-		bestIndividual = ci.getChromosomeRepresentation();
-	}
+    Population() {
+        chromosomes = new CopyOnWriteArrayList<ChromosomeRepresentationInterface>();
+        bestIndividual = ci.getChromosomeRepresentation();
+        if (executorService == null) {
+            executorService = Executors.newFixedThreadPool(Parameters.getPopulationSize() * 2);
+        }
+    }
 
 
+    /**
+     * Create initial population for the first generation
+     */
+    void initialPopulation() {
 
-	/**
-	 * Create initial population for the first generation
-	 * 
-	 */
-	void initialPopulation() {
 
-		
-		ClassInitialization chromosome = new ClassInitialization();
-		for (int i = 0; i < Parameters.getPopulationSize(); i++) {
-			
-			ChromosomeRepresentationInterface ch = chromosome
-					.getChromosomeRepresentation();
-			ch.generateChromosome();
-			chromosomes.add(ch);
-		}
-		try {
-			this.evaluateFitness();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+        ClassInitialization chromosome = new ClassInitialization();
+        for (int i = 0; i < Parameters.getPopulationSize(); i++) {
 
-	}
+            ChromosomeRepresentationInterface ch = chromosome
+                    .getChromosomeRepresentation();
+            ch.generateChromosome();
+            chromosomes.add(ch);
+        }
+        try {
+            this.evaluateFitness();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-	CrossoverInterface crossover = ci.getCrossoverOperator();
-	MutationInterface mutation = ci.getMutationOperator();
-	SelectionInterface selection = ci.getSelectionOperator();
 
-	/**
-	 * Create a new population based on the previous population
-	 * 
-	 * @param prevPopulation
-	 *            : previous population (from the previous generation)
-	 * @return new population based on the previous population
-	 */
-	void createPopulation(Population prevPopulation) {
+    }
 
-		
-		// Elitism. We want to keep the best individual from the previous
-		// generation
-		chromosomes.add(prevPopulation.getBestIndividual());
+    CrossoverInterface crossover = ci.getCrossoverOperator();
+    MutationInterface mutation = ci.getMutationOperator();
+    SelectionInterface selection = ci.getSelectionOperator();
 
-		while (chromosomes.size() < Parameters.getPopulationSize()) {
-			ChromosomeRepresentationInterface ind = ci
-					.getChromosomeRepresentation();
+    /**
+     * Create a new population based on the previous population
+     *
+     * @param prevPopulation : previous population (from the previous generation)
+     * @return new population based on the previous population
+     */
+    void createPopulation(Population prevPopulation) {
 
-			// selects one chromosome based on the selection method
-			ind = selection.performSelection(prevPopulation);
+        Random rand = new Random();
 
-			Random rand = new Random();
+        // Elitism. We want to keep the best individual from the previous generation
+        chromosomes.add(prevPopulation.getBestIndividual());
+        int numberOfChromosomes = chromosomes.size();
+        List<Future> futures = new ArrayList<>(Parameters.getPopulationSize());
+        while (numberOfChromosomes < Parameters.getPopulationSize()) {
+            // selects one chromosome based on the selection method
+            ChromosomeRepresentationInterface ind = selection.performSelection(prevPopulation);
 
-			// performs crossover with specified in the parameter file
-			// probability
-			if (rand.nextFloat() <= Parameters.getCrossoverProbability()) {
-				ChromosomeRepresentationInterface ind2 = ci
-						.getChromosomeRepresentation();
+            // performs crossover with specified in the parameter file
+            // probability
+            if (rand.nextFloat() <= Parameters.getCrossoverProbability()) {
+                int numberToAdd = Parameters.getPopulationSize() - numberOfChromosomes >= 2? 2: 1;
 
-				// selects another chromosome for crossover
-				ind2 = selection.performSelection(prevPopulation);
+                // selects another chromosome for crossover
+                ChromosomeRepresentationInterface ind2 = selection.performSelection(prevPopulation);
+                CrossoverWithMutations crossoverWithMutations = new CrossoverWithMutations(ind, ind2, numberToAdd);
+                futures.add(executorService.submit(crossoverWithMutations));
+                numberOfChromosomes += 2;
+            } else { // if no crossover was done
+                MutationWithoutCrossover mutationWithoutCrossover = new MutationWithoutCrossover(ind);
+                futures.add(executorService.submit(mutationWithoutCrossover));
+                ++numberOfChromosomes;
+            }
+        }
+        try {
+            for (Future future : futures) {
+                future.get();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            this.evaluateFitness();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-				ArrayList<ChromosomeRepresentationInterface> offsprings;
-				try {
-					// performs crossover
-					offsprings = new ArrayList<ChromosomeRepresentationInterface>(
-							crossover.performCrossover(ind, ind2));
+    private class CrossoverWithMutations implements Runnable {
+        private Random rand = new Random();
+        private int numberToAdd;
+        private ChromosomeRepresentationInterface ind;
+        private ChromosomeRepresentationInterface ind2;
 
-					// checks, if we can add both offsprings to the current
-					// population
-					if (chromosomes.size() + 2 < Parameters.getPopulationSize()) {
+        private CrossoverWithMutations(ChromosomeRepresentationInterface ind, ChromosomeRepresentationInterface ind2, int numberToAdd) {
+            this.numberToAdd = numberToAdd;
+            this.ind = ind;
+            this.ind2 = ind2;
+        }
 
-						// performs mutation on first offspring with specified
-						// in the parameter file probability
-						if (rand.nextFloat() <= Parameters
-								.getMutationProbability()) {
-							offsprings
-									.set(0, mutation.performMutation(offsprings
-											.get(0)));
-						}
+        @Override
+        public void run() {
+            try {
+                // performs crossover
+                List<ChromosomeRepresentationInterface> offsprings = new ArrayList<ChromosomeRepresentationInterface>(crossover.performCrossover(ind, ind2));
 
-						// performs mutation on second offspring with specified
-						// in the parameter file probability
-						if (rand.nextFloat() <= Parameters
-								.getMutationProbability()) {
-							offsprings
-									.set(1, mutation.performMutation(offsprings
-											.get(1)));
-						}
+                Future<ChromosomeRepresentationInterface> mutation1 = null;
+                Future<ChromosomeRepresentationInterface> mutation2 = null;
 
-						// adds offsprings to the current population
-						chromosomes.add(offsprings.get(0));
-						chromosomes.add(offsprings.get(1));
+                // performs mutation on first offspring with specified in the parameter file probability
+                if (rand.nextFloat() <= Parameters.getMutationProbability()) {
+                    Mutation mutation = new Mutation(offsprings.get(0));
+                    mutation1 = executorService.submit(mutation);
+                }
 
-					} else { // if we can add inly one offspring
+                // if we can add both offsprings to the current population
+                if (numberToAdd == 2) {
 
-						// performs mutation on first offspring with specified
-						// in the parameter file probability
-						if (rand.nextFloat() <= Parameters
-								.getMutationProbability()) {
-							offsprings
-									.set(0, mutation.performMutation(offsprings
-											.get(0)));
-						}
-						// adds one offspring to the current population
-						chromosomes.add(offsprings.get(0));
-					}
+                    // performs mutation on second offspring with specified in the parameter file probability
+                    if (rand.nextFloat() <= Parameters.getMutationProbability()) {
+                        Mutation mutation = new Mutation(offsprings.get(1));
+                        mutation2 = executorService.submit(mutation);
+                    }
+                    if (mutation1 != null) {
+                        offsprings.set(0, mutation1.get());
+                    }
+                    if (mutation2 != null) {
+                        offsprings.set(1, mutation2.get());
+                    }
+                    chromosomes.add(offsprings.get(1));
+                } else {
+                    if (mutation1 != null) {
+                        offsprings.set(0, mutation1.get());
+                    }
+                }
 
-				} catch (ChromomesInequalityException e) {
-					// if chromosomes are not equal
-					e.printStackTrace();
-				}
+                // adds offsprings to the current population
+                chromosomes.add(offsprings.get(0));
 
-			} else { // if no crossover was done
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-				// performs mutation on the chromosome with specified in the
-				// parameter file probability
-				if (rand.nextFloat() <= Parameters.getMutationProbability()) {
-					ind = mutation.performMutation(ind);
-				}
+    private class MutationWithoutCrossover implements Runnable {
+        private ChromosomeRepresentationInterface ind;
+        private Random rand = new Random();
 
-				// adds chromosome to the current population
-				chromosomes.add(ind);
-			}
+        private MutationWithoutCrossover(ChromosomeRepresentationInterface ind) {
+            this.ind = ind;
+        }
 
-		}
+        @Override
+        public void run() {
+            // performs mutation on the chromosome with specified in the
+            // parameter file probability
+            if (rand.nextFloat() <= Parameters.getMutationProbability()) {
+                Mutation mutation = new Mutation(ind);
+                try {
+                    ind = executorService.submit(mutation).get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
-		try {
-			this.evaluateFitness();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+            // adds chromosome to the current population
+            chromosomes.add(ind);
+        }
+    }
 
-	}
+    /**
+     * Receive chromosomes of the provided population
+     *
+     * @return array of genes of the population
+     */
+    public List<ChromosomeRepresentationInterface> getChromosomes() {
+        return this.chromosomes;
+    }
 
-	/**
-	 * Receive chromosomes of the provided population
-	 * 
-	 * @return array of genes of the population
-	 */
-	public ArrayList<ChromosomeRepresentationInterface> getChromosomes() {
-		return this.chromosomes;
-	}
+    /**
+     * Send current population to concurrent fitness evaluation
+     */
+    private void evaluateFitness() throws Exception {
+        ci.getFitnessEvaluationOperator().preEvaluateFitness();
+        if (this.chromosomes.size() == Parameters.getPopulationSize()) {
 
-	/**
-	 * Send current population to concurrent fitness evaluation
-	 * 
-	 */
-	private void evaluateFitness() throws Exception {
-		ci.getFitnessEvaluationOperator().preEvaluateFitness();
-		if (this.chromosomes.size() == Parameters.getPopulationSize()) {
+            // number of chromosomes to evaluate in one thread
+            int numberOfProcessors = chromosomes.size();
 
-			// number of chromosomes to evaluate in one thread
-			int portion = Parameters.getPopulationSize()
-					/ Parameters.getNumberOfProcessors();
+            List<Future> futures = new ArrayList<>(numberOfProcessors);
+            for (int i = 0; i < numberOfProcessors; i++) {
+                Evaluator evaluator = new Evaluator(chromosomes);
+                evaluator.beginIndex = i;
+                evaluator.endIndex = i + 1;
 
-			Thread[] threads = new Thread[Parameters.getNumberOfProcessors()];
+                Future<?> future = executorService.submit(evaluator);
+                futures.add(future);
+            }
+            for (Future future : futures) {
+                future.get();
+            }
+        } else {
+            throw new Exception("Current population size in not equal to desired population size.");
+        }
+        ci.getFitnessEvaluationOperator().postEvaluateFitness(chromosomes);
+        // finds average fitness of the population
+        this.findAverageFitness();
+        // finds best fitness of the population
+        this.findBestFitness();
+    }
 
-			int offset = 0;
-			for (int i = 0; i < Parameters.getNumberOfProcessors(); i++) {
+    /**
+     * Find the best individual in the current population besed on the fitness
+     * values
+     */
+    private void findBestFitness() {
 
-				if (i == Parameters.getNumberOfProcessors() - 1) {
-					if (offset + portion < Parameters.getPopulationSize()) {
-						portion = (Parameters.getPopulationSize() - ((Parameters
-								.getNumberOfProcessors() - 1) * portion));
-					}
-				}
-				Evaluator evaluator = new Evaluator(chromosomes);
-				evaluator.beginIndex = offset;
-				evaluator.endIndex = offset + portion;
+        double minFitness = chromosomes.get(0).getFitness();
+        int minFitnessID = 0;
+        for (int i = 1; i < this.chromosomes.size(); i++) {
+            if (this.chromosomes.get(i).getFitness() < minFitness) {
+                minFitness = this.chromosomes.get(i).getFitness();
+                minFitnessID = i;
+            }
+        }
+        this.bestFitness = minFitness;
+        this.bestIndividual = this.chromosomes.get(minFitnessID);
 
-				offset += portion;
+    }
 
-				threads[i] = new Thread(evaluator);
-				threads[i].start();
-			}
+    /**
+     * Find the average fitness of the entire population
+     */
+    private void findAverageFitness() {
+        float totalFitness = 0;
+        for (int i = 0; i < this.chromosomes.size(); i++) {
 
-			for (int i = 0; i < Parameters.getNumberOfProcessors(); i++) {
-				try {
-					threads[i].join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+            totalFitness += this.chromosomes.get(i).getFitness();
 
-			
-			
-			
+        }
 
-		} else {
-			throw new Exception(
-					"Current population size in not equal to desired population size.");
-		}
-		ci.getFitnessEvaluationOperator().postEvaluateFitness(chromosomes);
-		
-		// finds average fitness of the population
-		this.findAverageFitness();
-		// finds best fitness of the population
-		this.findBestFitness();
-	}
+        this.averageFitness = totalFitness / this.chromosomes.size();
 
-	/**
-	 * Find the best individual in the current population besed on the fitness
-	 * values
-	 * 
-	 */
-	private void findBestFitness() {
+    }
 
-		double minFitness = chromosomes.get(0).getFitness();
-		int minFitnessID = 0;
-		for (int i = 1; i < this.chromosomes.size(); i++) {
-			if (this.chromosomes.get(i).getFitness() < minFitness) {
-				minFitness = this.chromosomes.get(i).getFitness();
-				minFitnessID = i;
-			}
-		}
-		this.bestFitness = minFitness;
-		this.bestIndividual = this.chromosomes.get(minFitnessID);
+    /**
+     * Receive the average fitness of the entire population
+     *
+     * @return average fitness of the entire population
+     */
+    public double getAverageFitness() {
 
-	}
+        return this.averageFitness;
+    }
 
-	/**
-	 * Find the average fitness of the entire population
-	 * 
-	 */
-	private void findAverageFitness() {
-		float totalFitness = 0;
-		for (int i = 0; i < this.chromosomes.size(); i++) {
+    /**
+     * Receive the best fitness value in the population
+     *
+     * @return the best fitness value in the population
+     */
+    public double getBestFitness() {
+        return this.bestFitness;
+    }
 
-			totalFitness += this.chromosomes.get(i).getFitness();
+    /**
+     * Receive the best individual in the population based on the fitness value
+     *
+     * @return the best individual in the population
+     */
+    public ChromosomeRepresentationInterface getBestIndividual() {
+        return this.bestIndividual;
+    }
 
-		}
+    private class Crossover implements Callable<List<ChromosomeRepresentationInterface>> {
+        private ChromosomeRepresentationInterface ind1;
+        private ChromosomeRepresentationInterface ind2;
 
-		this.averageFitness = totalFitness / this.chromosomes.size();
+        private Crossover(ChromosomeRepresentationInterface ind1,
+                          ChromosomeRepresentationInterface ind2) {
+            this.ind1 = ind1;
+            this.ind2 = ind2;
+        }
 
-	}
+        @Override
+        public List<ChromosomeRepresentationInterface> call() throws Exception {
+            return new ArrayList<ChromosomeRepresentationInterface>(
+                    crossover.performCrossover(ind1, ind2));
+        }
+    }
 
-	/**
-	 * Receive the average fitness of the entire population
-	 * 
-	 * @return average fitness of the entire population
-	 */
-	public double getAverageFitness() {
+    private class Mutation implements Callable<ChromosomeRepresentationInterface> {
 
-		return this.averageFitness;
-	}
+        private ChromosomeRepresentationInterface ind;
 
-	/**
-	 * Receive the best fitness value in the population
-	 * 
-	 * @return the best fitness value in the population
-	 */
-	public double getBestFitness() {
-		return this.bestFitness;
-	}
+        private Mutation(ChromosomeRepresentationInterface ind) {
+            this.ind = ind;
+        }
 
-	/**
-	 * Receive the best individual in the population based on the fitness value
-	 * 
-	 * @return the best individual in the population
-	 */
-	public ChromosomeRepresentationInterface getBestIndividual() {
-		return this.bestIndividual;
-	}
+        @Override
+        public ChromosomeRepresentationInterface call() throws Exception {
+            return mutation.performMutation(ind);
+        }
+    }
 
 }

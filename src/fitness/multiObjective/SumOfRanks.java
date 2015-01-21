@@ -5,12 +5,9 @@
 package fitness.multiObjective;
 
 
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-
 import chromosome.ChromosomeRepresentationInterface;
+
+import java.util.List;
 
 /**
  *
@@ -99,7 +96,7 @@ public class SumOfRanks implements MultiObjective{
 	 */
 	@Override
 	public void postEvaluateFitness(
-			ArrayList<ChromosomeRepresentationInterface> chromosomes) {
+			List<ChromosomeRepresentationInterface> chromosomes) {
 		// TODO Auto-generated method stub
 		
 	}

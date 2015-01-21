@@ -4,11 +4,11 @@
 package fitness.singleObjective;
 
 
-import java.util.ArrayList;
-
-import params.ClassInitialization;
 import chromosome.ChromosomeRepresentationInterface;
 import fitness.FitnessEvaluationInterface;
+import params.ClassInitialization;
+
+import java.util.List;
 
 /**
  * @author or13uw
@@ -54,7 +54,7 @@ public class Simple implements FitnessEvaluationInterface{
 	 */
 	@Override
 	public void postEvaluateFitness(
-			ArrayList<ChromosomeRepresentationInterface> chromosomes) {
+			List<ChromosomeRepresentationInterface> chromosomes) {
 		// TODO Auto-generated method stub
 		
 	}

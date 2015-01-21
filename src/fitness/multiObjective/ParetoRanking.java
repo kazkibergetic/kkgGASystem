@@ -5,15 +5,13 @@
 package fitness.multiObjective;
 
 
-
+import chromosome.ChromosomeRepresentationInterface;
+import params.ClassInitialization;
+import params.Parameters;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-
-import params.ClassInitialization;
-import params.Parameters;
-import chromosome.ChromosomeRepresentationInterface;
+import java.util.List;
 
 /**
  *
@@ -171,7 +169,7 @@ public class ParetoRanking implements MultiObjective{
 	 */
 	@Override
 	public void postEvaluateFitness(
-			ArrayList<ChromosomeRepresentationInterface> chromosomes) throws Exception {
+			List<ChromosomeRepresentationInterface> chromosomes) throws Exception {
 		// TODO Auto-generated method stub
 		
 		rankResults = new ArrayList<Double>();

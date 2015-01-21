@@ -179,15 +179,9 @@ public class Problem implements ProblemInterface {
         Map<Integer,Points> bireductObjectsById =  new TreeMap<>();
         Map<Integer,Points> bireductObjectsByIndex =  new TreeMap<>();
 
-        long a = System.currentTimeMillis();
-
-
         // go through all points (m+n), where
 		// n=|A| = numConditionalAttributes and m = |U|
 		for (int i = 0; i < numRows + numConditionalAttributes; i++) {
-            if (i % 500 == 0) {
-                System.out.println("" + i + "\t"+(System.currentTimeMillis()-a));
-            }
             // if a(i) <=n, if the value of gene at i-th position less than
 			// number of conditional attributes
             Integer gene = (Integer) chromosome.getGene(i);
