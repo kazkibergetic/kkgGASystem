@@ -3,11 +3,12 @@
  */
 package operators.crossover;
 
-import java.util.ArrayList;
-
-import params.ClassInitialization;
 import chromosome.ChromosomeRepresentationInterface;
 import exceptions.ChromomesInequalityException;
+import params.ClassInitialization;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author or13uw
@@ -25,7 +26,7 @@ public class CycleCrossover implements CrossoverInterface {
 	 * chromosome.ChromosomeRepresentationInterface)
 	 */
 	@Override
-	public ArrayList<ChromosomeRepresentationInterface> performCrossover(
+	public List<ChromosomeRepresentationInterface> performCrossover(
 			ChromosomeRepresentationInterface ind1,
 			ChromosomeRepresentationInterface ind2) throws ChromomesInequalityException {
 		

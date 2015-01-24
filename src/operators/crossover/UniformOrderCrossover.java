@@ -3,11 +3,12 @@
  */
 package operators.crossover;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import params.ClassInitialization;
 import chromosome.ChromosomeRepresentationInterface;
+import params.ClassInitialization;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -22,7 +23,7 @@ public class UniformOrderCrossover implements CrossoverInterface {
 	 * @see operators.crossover.CrossoverInterface#performCrossover(chromosome.ChromosomeRepresentationInterface, chromosome.ChromosomeRepresentationInterface)
 	 */
 	@Override
-	public ArrayList<ChromosomeRepresentationInterface> performCrossover(
+	public List<ChromosomeRepresentationInterface> performCrossover(
 			ChromosomeRepresentationInterface parent1,
 			ChromosomeRepresentationInterface parent2) {
 		

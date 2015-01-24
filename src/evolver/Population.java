@@ -158,7 +158,7 @@ public class Population extends Thread {
         public void run() {
             try {
                 // performs crossover
-                List<ChromosomeRepresentationInterface> offsprings = new ArrayList<ChromosomeRepresentationInterface>(crossover.performCrossover(ind, ind2));
+                List<ChromosomeRepresentationInterface> offsprings = new ArrayList<>(crossover.performCrossover(ind, ind2));
 
                 Future<ChromosomeRepresentationInterface> mutation1 = null;
                 Future<ChromosomeRepresentationInterface> mutation2 = null;

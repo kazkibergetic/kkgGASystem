@@ -16,7 +16,7 @@
 
 package chromosome;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
 * KazKiberGetic GA System (kkgGA)
@@ -27,18 +27,11 @@ import java.util.ArrayList;
 * @since   2014-08-31 
 */
 
-public interface ChromosomeRepresentationInterface {
+public interface ChromosomeRepresentationInterface<T> extends Cloneable {
 
-	ArrayList<?> chromosome = new ArrayList<>();
-	
-		
-	String metadata = null;
+	void setMetaData(String meta);
 
-	
-	public void setMetaData(String meta);
-	
-	public String getMetaData();
-	
+	String getMetaData();
 	
 	/**Checks if the chromosome is feasible
 	 * @return true if the chromosome is feasible, otherwise false
@@ -52,12 +45,12 @@ public interface ChromosomeRepresentationInterface {
 	/**Replaces the current chromosome's genes with the provided ones
 	 * @param newChromosome : set of genes to replace current genes
 	 */
-	void setChromosome(ArrayList<Integer> newChromosome);
+	void setChromosome(List<T> newChromosome);
 	
 	/**Receives current chromosome
 	 * @return the current chsromosome's genes
 	 */
-	ArrayList<?> getChromosome();
+	List<T> getChromosome();
 	
 	/**Receives the size of the chromosome
 	 * @return number of genes in chromosome
@@ -84,23 +77,21 @@ public interface ChromosomeRepresentationInterface {
 	 * @param position : gene's position to replace
 	 * @param gene : new gene
 	 */
-	void setGene(int position, Object gene);
+	void setGene(int position, T gene);
 	
 	/**Receives the gene at the provided position
 	 * @param position : position of the gene
 	 * @return gene at the provided position
 	 */
-	Object getGene(int position);
+	T getGene(int position);
 	
 	
-	void setAllGenes(ChromosomeRepresentationInterface ch);
-	
+	void setAllGenes(ChromosomeRepresentationInterface<T> ch);
+
 	/**Initialize current chromosome with some default genes
 	 * @param size : number of genes in chromosome
 	 */
 	void initializeDefault(int size);
-	
-	
-	
-	
+
+    ChromosomeRepresentationInterface<T> clone();
 }

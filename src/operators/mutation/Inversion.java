@@ -3,9 +3,9 @@
  */
 package operators.mutation;
 
-import java.util.Collections;
-
 import chromosome.ChromosomeRepresentationInterface;
+
+import java.util.Collections;
 
 /**
  * @author or13uw
@@ -17,13 +17,10 @@ public class Inversion implements MutationInterface{
 	 * @see operators.mutation.MutationInterface#performMutation(chromosome.ChromosomeRepresentationInterface)
 	 */
 	@Override
-	public ChromosomeRepresentationInterface performMutation(
-			ChromosomeRepresentationInterface ind) {
-		
-		
-		Collections.reverse(ind.getChromosome());
-		// TODO Auto-generated method stub
-		return ind;
+	public ChromosomeRepresentationInterface performMutation(ChromosomeRepresentationInterface ind) {
+        ChromosomeRepresentationInterface clone = ind.clone();
+        Collections.reverse(clone.getChromosome());
+		return clone;
 	}
 
 }

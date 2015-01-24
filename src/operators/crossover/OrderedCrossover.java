@@ -3,12 +3,13 @@
  */
 package operators.crossover;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import params.ClassInitialization;
 import chromosome.ChromosomeRepresentationInterface;
 import exceptions.ChromomesInequalityException;
+import params.ClassInitialization;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author or13uw
@@ -21,7 +22,7 @@ public class OrderedCrossover implements CrossoverInterface {
 	 * @see operators.crossover.CrossoverInterface#performCrossover(chromosome.ChromosomeRepresentationInterface, chromosome.ChromosomeRepresentationInterface)
 	 */
 	@Override
-	public ArrayList<ChromosomeRepresentationInterface> performCrossover(
+	public List<ChromosomeRepresentationInterface> performCrossover(
 			ChromosomeRepresentationInterface parent1,
 			ChromosomeRepresentationInterface parent2) throws ChromomesInequalityException {
 		
@@ -32,7 +33,7 @@ public class OrderedCrossover implements CrossoverInterface {
 				
 				int len = parent1.getSize();
 				
-				ArrayList<ChromosomeRepresentationInterface> offsprings = new ArrayList<ChromosomeRepresentationInterface>();
+				List<ChromosomeRepresentationInterface> offsprings = new ArrayList<ChromosomeRepresentationInterface>();
 				
 				ChromosomeRepresentationInterface offspring1 = ci.getChromosomeRepresentation();
 				ChromosomeRepresentationInterface offspring2 = ci.getChromosomeRepresentation();
