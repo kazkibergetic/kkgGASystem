@@ -4,6 +4,8 @@
 package problems.RoughSets.bireduct;
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.ProblemResultCache;
+import evolver.RunEvolutionContext;
 import problems.Points;
 import problems.ProblemInterface;
 
@@ -243,7 +245,7 @@ public class Problem implements ProblemInterface {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public String evaluateFitness(ChromosomeRepresentationInterface chromosome) {
+	public String evaluateFitness(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface chromosome) {
 
 		// System.out.println(points.size());
 
@@ -259,21 +261,29 @@ public class Problem implements ProblemInterface {
 
 		Collections.sort(biReduct.get(0));
 		Collections.sort(biReduct.get(1));
-		System.out.println("attributes:");
-		for (int d = 0; d < biReduct.get(0).size(); d++) {
-			System.out.print(biReduct.get(0).get(d).id + " ");
 
-		}
-		System.out.println();
-		System.out.println("objects:");
-		for (int d = 0; d < biReduct.get(1).size(); d++) {
-			System.out.print(biReduct.get(1).get(d).id + " ");
+        StringBuilder result = new StringBuilder();
+        result.append("attributes:").append("\n");
 
-		}
+        for (int d = 0; d < biReduct.get(0).size(); d++) {
+            result.append(biReduct.get(0).get(d).id).append(" ");
+        }
+        result.append("\n").append("objects:").append("\n");
+        for (int d = 0; d < biReduct.get(1).size(); d++) {
+            result.append(biReduct.get(1).get(d).id).append(" ");
+        }
+        result.append("\n");
+
+        String chromosomeResult = result.toString();
+
+        System.out.println(chromosomeResult);
 		System.out.println();
 		System.out.println("-----------------------");
 
-		//String rez = String.valueOf(biReduct.get(0).size()
+        ProblemResultCache problemResultCache = runEvolutionContext.getProblemResultCache();
+        problemResultCache.putResults(chromosome, chromosomeResult);
+
+        //String rez = String.valueOf(biReduct.get(0).size()
 		//		+ (numRows - biReduct.get(1).size()));
 
 		String rez = biReduct.get(0).size()	+ ","+ (numRows - biReduct.get(1).size());

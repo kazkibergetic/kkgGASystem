@@ -1,12 +1,12 @@
 package params;
 
+import exceptions.ParametersInitializationException;
+import output.DisplayInfo;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import output.DisplayInfo;
-import exceptions.ParametersInitializationException;
 
 
 public class ParametersInitialization extends Parameters {
@@ -26,7 +26,7 @@ public class ParametersInitialization extends Parameters {
 			if (!f.exists()) {
 				// load default
 				System.out.println("A parameter files was not detected.");
-				
+
 			} else {
 				FileInputStream is = new FileInputStream(f);
 				properties.load(is);
@@ -133,7 +133,7 @@ public class ParametersInitialization extends Parameters {
 										.getProperty(InputParametersNames.MUTATION_PROBABILITY));
 
 			}
-			
+
 			if (ParametersInitialization.properties.getProperty(InputParametersNames.PROCESSORS) == null) {
 				processors = Runtime.getRuntime().availableProcessors()-1;
 			}
@@ -163,8 +163,8 @@ public class ParametersInitialization extends Parameters {
 				file_extension = ParametersInitialization.properties.getProperty(
 						InputParametersNames.FILE_EXTENSION).trim();
 			}
-			
-			
+
+
 			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.STATISTICS_OUTPUT) == null) {
 				throw new ParametersInitializationException(
@@ -173,8 +173,14 @@ public class ParametersInitialization extends Parameters {
 				stat_out = ParametersInitialization.properties.getProperty(
 						InputParametersNames.STATISTICS_OUTPUT).trim();
 			}
-			
-			
+
+            elitism_size = Integer.parseInt(ParametersInitialization.properties.getProperty(InputParametersNames.ELITISM_SIZE, "1").trim());
+
+            DisplayInfo.displayInitialization(InputParametersNames.ELITISM_SIZE, String.valueOf(elitism_size));
+
+            best_individuals_out = Integer.parseInt(ParametersInitialization.properties.getProperty(InputParametersNames.BEST_INDIVIDUAL_OUT, "1").trim());
+
+            DisplayInfo.displayInitialization(InputParametersNames.BEST_INDIVIDUAL_OUT, String.valueOf(best_individuals_out));
 			/*
 			 * ==================================================================
 			 * ================================
@@ -224,4 +230,7 @@ public class ParametersInitialization extends Parameters {
 
 	}
 
+    public static Properties cloneProperties(){
+        return (Properties) properties.clone();
+    }
 }

@@ -6,6 +6,8 @@ package problems.RoughSets.reduct;
 import chromosome.ChromosomeRepresentationInterface;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import evolver.ProblemResultCache;
+import evolver.RunEvolutionContext;
 import problems.Points;
 import problems.ProblemInterface;
 
@@ -179,17 +181,20 @@ public class Problem implements ProblemInterface {
      * @see problems.ProblemInterface#evaluateFitness()
      */
     @Override
-    public String evaluateFitness(ChromosomeRepresentationInterface chromosome) {
+    public String evaluateFitness(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface chromosome) {
 
-        ArrayList<Points> reduct = this.findReduct(chromosome);
+        List<Points> reduct = this.findReduct(chromosome);
 
-		
-		 /*for(int d = 0; d <reduct.size(); d++) {
-          System.out.print(reduct.get(d).id +" ");
-		  
-		  } System.out.println();
-		 
-	*/
+		StringBuilder result = new StringBuilder();
+		for(int d = 0; d <reduct.size(); d++) {
+            result.append(reduct.get(d).id).append(" ");
+        }
+        result.append("\n");
+
+        ProblemResultCache problemResultCache = runEvolutionContext.getProblemResultCache();
+        problemResultCache.putResults(chromosome, result.toString());
+
+
         return String.valueOf(reduct.size());
     }
 

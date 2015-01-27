@@ -23,6 +23,8 @@ import params.ClassInitialization;
 import params.Parameters;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -55,12 +57,12 @@ public class Population extends Thread {
     protected List<ChromosomeRepresentationInterface> chromosomes;
 
     // the fittest in the population
-    private ChromosomeRepresentationInterface bestIndividual;
+    private List<ChromosomeRepresentationInterface> bestIndividuals;
     private ExecutorService executorService;
 
     Population() {
         chromosomes = new CopyOnWriteArrayList<ChromosomeRepresentationInterface>();
-        bestIndividual = ci.getChromosomeRepresentation();
+        bestIndividuals = Collections.singletonList(ci.getChromosomeRepresentation());
         if (executorService == null) {
             executorService = Executors.newFixedThreadPool(Parameters.getPopulationSize() * 2);
         }
@@ -70,7 +72,7 @@ public class Population extends Thread {
     /**
      * Create initial population for the first generation
      */
-    void initialPopulation() {
+    void initialPopulation(RunEvolutionContext runEvolutionContext) {
 
 
         ClassInitialization chromosome = new ClassInitialization();
@@ -82,7 +84,7 @@ public class Population extends Thread {
             chromosomes.add(ch);
         }
         try {
-            this.evaluateFitness();
+            this.evaluateFitness(runEvolutionContext);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,22 +102,31 @@ public class Population extends Thread {
      * @param prevPopulation : previous population (from the previous generation)
      * @return new population based on the previous population
      */
-    void createPopulation(Population prevPopulation) {
+    void createPopulation(RunEvolutionContext runEvolutionContext, Population prevPopulation) {
+
+        int populationSize = Parameters.getPopulationSize();
+        int numberOfChromosomes = chromosomes.size();
 
         Random rand = new Random();
 
         // Elitism. We want to keep the best individual from the previous generation
-        chromosomes.add(prevPopulation.getBestIndividual());
-        int numberOfChromosomes = chromosomes.size();
-        List<Future> futures = new ArrayList<>(Parameters.getPopulationSize());
-        while (numberOfChromosomes < Parameters.getPopulationSize()) {
+        List<ChromosomeRepresentationInterface> prevPopulationIndividuals = prevPopulation.getBestIndividuals();
+        List<ChromosomeRepresentationInterface> prevPopulationBestIndividuals = prevPopulationIndividuals.subList(0, Parameters.getElitismSize());
+        if (numberOfChromosomes + prevPopulationBestIndividuals.size() <= populationSize) {
+            chromosomes.addAll(prevPopulationBestIndividuals);
+        } else {
+            throw new IllegalStateException("Current population size in not equal to desired population size.");
+        }
+
+        List<Future> futures = new ArrayList<>(populationSize);
+        while (numberOfChromosomes < populationSize) {
             // selects one chromosome based on the selection method
             ChromosomeRepresentationInterface ind = selection.performSelection(prevPopulation);
 
             // performs crossover with specified in the parameter file
             // probability
             if (rand.nextFloat() <= Parameters.getCrossoverProbability()) {
-                int numberToAdd = Parameters.getPopulationSize() - numberOfChromosomes >= 2? 2: 1;
+                int numberToAdd = populationSize - numberOfChromosomes >= 2 ? 2 : 1;
 
                 // selects another chromosome for crossover
                 ChromosomeRepresentationInterface ind2 = selection.performSelection(prevPopulation);
@@ -132,11 +143,7 @@ public class Population extends Thread {
             for (Future future : futures) {
                 future.get();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            this.evaluateFitness();
+            this.evaluateFitness(runEvolutionContext);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,7 +244,7 @@ public class Population extends Thread {
     /**
      * Send current population to concurrent fitness evaluation
      */
-    private void evaluateFitness() throws Exception {
+    private void evaluateFitness(RunEvolutionContext runEvolutionContext) throws Exception {
         ci.getFitnessEvaluationOperator().preEvaluateFitness();
         if (this.chromosomes.size() == Parameters.getPopulationSize()) {
 
@@ -246,7 +253,7 @@ public class Population extends Thread {
 
             List<Future> futures = new ArrayList<>(numberOfProcessors);
             for (int i = 0; i < numberOfProcessors; i++) {
-                Evaluator evaluator = new Evaluator(chromosomes);
+                Evaluator evaluator = new Evaluator(runEvolutionContext, chromosomes);
                 evaluator.beginIndex = i;
                 evaluator.endIndex = i + 1;
 
@@ -261,7 +268,9 @@ public class Population extends Thread {
         }
         ci.getFitnessEvaluationOperator().postEvaluateFitness(chromosomes);
         // finds average fitness of the population
-        this.findAverageFitness();
+        if (!runEvolutionContext.isRankOption()){
+            this.findAverageFitness();
+        }
         // finds best fitness of the population
         this.findBestFitness();
     }
@@ -271,18 +280,8 @@ public class Population extends Thread {
      * values
      */
     private void findBestFitness() {
-
-        double minFitness = chromosomes.get(0).getFitness();
-        int minFitnessID = 0;
-        for (int i = 1; i < this.chromosomes.size(); i++) {
-            if (this.chromosomes.get(i).getFitness() < minFitness) {
-                minFitness = this.chromosomes.get(i).getFitness();
-                minFitnessID = i;
-            }
-        }
-        this.bestFitness = minFitness;
-        this.bestIndividual = this.chromosomes.get(minFitnessID);
-
+        chromosomes.sort(new ChromosomeFitnessComparator());
+        bestIndividuals = chromosomes;
     }
 
     /**
@@ -299,6 +298,7 @@ public class Population extends Thread {
         this.averageFitness = totalFitness / this.chromosomes.size();
 
     }
+
 
     /**
      * Receive the average fitness of the entire population
@@ -324,25 +324,8 @@ public class Population extends Thread {
      *
      * @return the best individual in the population
      */
-    public ChromosomeRepresentationInterface getBestIndividual() {
-        return this.bestIndividual;
-    }
-
-    private class Crossover implements Callable<List<ChromosomeRepresentationInterface>> {
-        private ChromosomeRepresentationInterface ind1;
-        private ChromosomeRepresentationInterface ind2;
-
-        private Crossover(ChromosomeRepresentationInterface ind1,
-                          ChromosomeRepresentationInterface ind2) {
-            this.ind1 = ind1;
-            this.ind2 = ind2;
-        }
-
-        @Override
-        public List<ChromosomeRepresentationInterface> call() throws Exception {
-            return new ArrayList<ChromosomeRepresentationInterface>(
-                    crossover.performCrossover(ind1, ind2));
-        }
+    public List<ChromosomeRepresentationInterface> getBestIndividuals() {
+        return this.bestIndividuals;
     }
 
     private class Mutation implements Callable<ChromosomeRepresentationInterface> {
@@ -356,6 +339,16 @@ public class Population extends Thread {
         @Override
         public ChromosomeRepresentationInterface call() throws Exception {
             return mutation.performMutation(ind);
+        }
+
+    }
+
+    private static class ChromosomeFitnessComparator implements Comparator<ChromosomeRepresentationInterface> {
+        @Override
+        public int compare(ChromosomeRepresentationInterface o1, ChromosomeRepresentationInterface o2) {
+            double fitness1 = o1.getFitness();
+            double fitness2 = o2.getFitness();
+            return Double.compare(fitness1, fitness2);
         }
     }
 

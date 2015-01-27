@@ -4,7 +4,7 @@ import chromosome.ChromosomeRepresentationInterface;
 import operators.crossover.CrossoverInterface;
 import operators.mutation.MutationInterface;
 import operators.selection.SelectionInterface;
-import fitness.FitnessEvaluationInterface;
+import fitness.FitnessEvaluator;
 
 /**
  * @author or13uw
@@ -25,7 +25,7 @@ public class Parameters {
 	protected static MutationInterface mutation_operator;
 	protected static SelectionInterface selection_operator;
 	
-	protected static FitnessEvaluationInterface fitness_evaluation_operator;
+	protected static FitnessEvaluator fitness_evaluation_operator;
 	
 	public static ChromosomeRepresentationInterface chromosome;
 	
@@ -34,7 +34,10 @@ public class Parameters {
 	static String input_folder;
 	
 	static String file_extension;
-	
+
+    static int elitism_size;
+
+    static int best_individuals_out;
 	
 	/** Receives # of experiments (runs)
 	 * @return # of runs
@@ -115,9 +118,12 @@ public class Parameters {
 	{
 		return input_folder;
 	}
-	
 
-	
-	
-	
+    public static int getElitismSize() {
+        return elitism_size;
+    }
+
+    public static int getBestIndividualsOut() {
+        return best_individuals_out;
+    }
 }

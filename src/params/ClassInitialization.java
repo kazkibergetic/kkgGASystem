@@ -3,12 +3,12 @@
  */
 package params;
 
+import fitness.FitnessEvaluator;
 import operators.crossover.CrossoverInterface;
 import operators.mutation.MutationInterface;
 import operators.selection.SelectionInterface;
 import problems.ProblemInterface;
 import chromosome.ChromosomeRepresentationInterface;
-import fitness.FitnessEvaluationInterface;
 
 /**
  * @author or13uw
@@ -110,14 +110,14 @@ public class ClassInitialization extends ParametersInitialization{
 		return selection;
 	}
 
-	public FitnessEvaluationInterface getFitnessEvaluationOperator() {
-		FitnessEvaluationInterface fitness = null;
+	public FitnessEvaluator getFitnessEvaluationOperator() {
+		FitnessEvaluator fitness = null;
 		String className = ParametersInitialization.properties
 				.getProperty(InputParametersNames.FITNESS_FUNCTION).trim();
 		try {
 
 			Class<?> obj = Class.forName(className);
-			fitness = (FitnessEvaluationInterface) obj.newInstance();
+			fitness = (FitnessEvaluator) obj.newInstance();
 
 		} catch (IllegalAccessException e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);

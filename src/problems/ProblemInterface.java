@@ -3,11 +3,11 @@
  */
 package problems;
 
+import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
+
 import java.io.File;
 import java.util.ArrayList;
-
-import problems.Points;
-import chromosome.ChromosomeRepresentationInterface;
 
 
 /**
@@ -42,5 +42,5 @@ public interface ProblemInterface  {
      * @param chromosome : supplied by GA system. permutation if attributes to find reduct
      * @return fitness value of the provided chromosome
      */	
-	public String evaluateFitness(ChromosomeRepresentationInterface  chromosome);
+	public String evaluateFitness(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface  chromosome);
 }

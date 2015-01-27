@@ -6,39 +6,31 @@ package fitness.multiObjective;
 
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
 
 import java.util.List;
 
 /**
- *
  * @author anthony
  */
-public class SumOfRanks implements MultiObjective{
+public class SumOfRanks implements RankEvaluator {
+    @Override
+    public double evaluateFitness(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface chromosome) {
+        return 0;
+    }
 
-	/* (non-Javadoc)
-	 * @see fitness.FitnessEvaluationInterface#evaluateFitness(chromosome.ChromosomeRepresentationInterface)
-	 */
-	@Override
-	public double evaluateFitness(ChromosomeRepresentationInterface chromosome) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-    
-    
+
     /**
-     * 
      * @param ranks
-     * @param popSize 
-     * 
-     * #SORTED
-     * ranks  obj1 obj2 normalized sum-of-ranks
-     * 2,1000 1 5 1.2
-     * 4,600  2 3 1.0
-     * 7,800  3 4 1.4
-     * 8,400  4 1 1.0
-     * 9,500  5 2 1.4 
+     * @param popSize #SORTED
+     *                ranks  obj1 obj2 normalized sum-of-ranks
+     *                2,1000 1 5 1.2
+     *                4,600  2 3 1.0
+     *                7,800  3 4 1.4
+     *                8,400  4 1 1.0
+     *                9,500  5 2 1.4
      */
-	/*
+    /*
     @SuppressWarnings("unchecked")
 	public ArrayList<Double> sorCalculations(ArrayList<String> ranks, int popSize)
     {
@@ -78,27 +70,13 @@ public class SumOfRanks implements MultiObjective{
          
     }
 */
-	/**
-	 * 
-	 * @param pop
-	 * @param run
-	 * @param generation
-	 */
-	public void preEvaluateFitness() {
-	}
+    @Override
+    public void preEvaluateFitness() {
+    }
 
-	public void postEvaluateFitness() {
-	}
+    @Override
+    public void postEvaluateFitness(List<ChromosomeRepresentationInterface> chromosomes) {
 
+    }
 
-	/* (non-Javadoc)
-	 * @see fitness.FitnessEvaluationInterface#postEvaluateFitness(java.util.ArrayList)
-	 */
-	@Override
-	public void postEvaluateFitness(
-			List<ChromosomeRepresentationInterface> chromosomes) {
-		// TODO Auto-generated method stub
-		
-	}
-    
 }

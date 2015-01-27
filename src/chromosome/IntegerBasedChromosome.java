@@ -177,4 +177,13 @@ public class IntegerBasedChromosome implements ChromosomeRepresentationInterface
         clone.setAllGenes(this);
         return clone;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Integer gene : chromosome) {
+            builder.append(gene).append(" ");
+        }
+        return builder.toString();
+    }
 }

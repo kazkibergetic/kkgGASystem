@@ -5,6 +5,7 @@ package output;
 
 import evolver.Population;
 import evolver.RunEvolution;
+import evolver.RunEvolutionContext;
 
 /**
  * @author or13uw
@@ -43,10 +44,12 @@ public class DisplayInfo {
 		
 		
 	}
-	public static void displayGenerationStatistics(Population p)
+	public static void displayGenerationStatistics(Population p, RunEvolutionContext runEvolutionContext)
 	{
-		System.out.println("Best fitness: "+p.getBestFitness());
-		System.out.println("Average fitness: "+p.getAverageFitness());
+        if (!runEvolutionContext.isRankOption()){
+            System.out.println("Best fitness: "+p.getBestFitness());
+            System.out.println("Average fitness: "+p.getAverageFitness());
+        }
 	}
 	
 	public static void displayStartReadingFile(String filename)

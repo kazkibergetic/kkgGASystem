@@ -40,8 +40,10 @@ public class Evaluator implements Runnable {
 
 	private ArrayList<ChromosomeRepresentationInterface> chromosomes = new ArrayList<ChromosomeRepresentationInterface>();
 	private ClassInitialization ci = new ClassInitialization();
+    private RunEvolutionContext runEvolutionContext;
 
-	public Evaluator(List<ChromosomeRepresentationInterface> ch) {
+	public Evaluator(RunEvolutionContext runEvolutionContext, List<ChromosomeRepresentationInterface> ch) {
+        this.runEvolutionContext = runEvolutionContext;
 		chromosomes.addAll(ch);
 
 	}
@@ -56,11 +58,9 @@ public class Evaluator implements Runnable {
 		for (int i = beginIndex; i < endIndex; i++) {
 			double f;
 			try {
-				f = this.ci.getFitnessEvaluationOperator().evaluateFitness(
-						this.chromosomes.get(i));
+				f = this.ci.getFitnessEvaluationOperator().evaluateFitness(runEvolutionContext, this.chromosomes.get(i));
 				this.chromosomes.get(i).setFitness(f);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
