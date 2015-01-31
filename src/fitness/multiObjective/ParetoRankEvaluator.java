@@ -9,14 +9,13 @@ import params.Parameters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author anthony
  */
 public class ParetoRankEvaluator implements RankEvaluator {
 
-    private static List<String> ranks = new CopyOnWriteArrayList<String>();
+    private static List<String> ranks = new ArrayList<String>();
     ClassInitialization ci = new ClassInitialization();
 
     /**
@@ -122,8 +121,9 @@ public class ParetoRankEvaluator implements RankEvaluator {
         String result = ci.getProblem().evaluateFitness(runEvolutionContext, chromosome);
 
         if (result.split(",").length > 1) {
-
-            ranks.add(result);
+            synchronized (this) {
+                ranks.add(result);
+            }
             chromosome.setMetaData(result);
             //System.out.println(chromosome.getMetaData());
             //ranks.add(result);
