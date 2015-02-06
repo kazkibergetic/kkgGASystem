@@ -9,13 +9,14 @@ import params.Parameters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author anthony
  */
 public class ParetoRankEvaluator implements RankEvaluator {
 
-    private static List<String> ranks = new ArrayList<String>();
+    private static List<String> ranks = new CopyOnWriteArrayList<>();
     ClassInitialization ci = new ClassInitialization();
 
     /**
@@ -32,13 +33,14 @@ public class ParetoRankEvaluator implements RankEvaluator {
     @SuppressWarnings("unchecked")
     public List<Double> paretoCalculations() {
         ArrayList<String> rankedLevels = new ArrayList<String>();
+        ArrayList<String> originalRanks = new ArrayList<>(ranks);
         ArrayList<String> rankCopy = new ArrayList<>(ranks);
         ArrayList<Double> selectionRank = new ArrayList<Double>();
         //int count=0;
 
         int rank = 1;
 
-        Collections.sort(ranks); //sort to arrange first objective in ascending manner : NB: small values are best
+        Collections.sort(originalRanks); //sort to arrange first objective in ascending manner : NB: small values are best
         //System.out.println("#SORTED");
         //replace with a more efficient later
         for(int i=0; i<Parameters.getPopulationSize();i++)
@@ -50,17 +52,17 @@ public class ParetoRankEvaluator implements RankEvaluator {
         {
             ArrayList<Double> ranked = new ArrayList<>();  //keep records of currently ranked level. eg. rank 0, 1, etc
             //ranked.add(Double.parseDouble(ranks2.get(0).split(",")[1]));
-            for(int j=0; j<ranks.size();j++)
+            for(int j=0; j<originalRanks.size();j++)
             {
-                String[] sp = ranks.get(j).split(","); // ranks.add("2,1000")
+                String[] sp = originalRanks.get(j).split(","); // originalRanks.add("2,1000")
                 //check if second objective exists in currently ranked values
                 if(isExistIndexPareto(ranked,Double.parseDouble(sp[1])))
                 {
                     ranked.add((Double.parseDouble(sp[1])));
                     //ranked.get(j);
-                    if(!rankedLevels.contains(ranks.get(j))) // records of ranked values from ranks
+                    if(!rankedLevels.contains(originalRanks.get(j))) // records of ranked values from ranks
                     {
-                        rankedLevels.add(ranks.get(j));
+                        rankedLevels.add(originalRanks.get(j));
                     }
                     //ranks2.remove(rank);
                     //System.out.println(sp[0]+","+sp[1]+" #Rank:"+rank);
@@ -73,20 +75,20 @@ public class ParetoRankEvaluator implements RankEvaluator {
                     //count++;
                     //System.out.println("#outmask"+GenerateMask.returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]));
                 }
-                //System.out.println(ranks.get(j));
+                //System.out.println(originalRanks.get(j));
             }
             //remove occurences of similar ranks from main array
             for(String v:rankedLevels)
             {
-                while(ranks.contains(v))
+                while(originalRanks.contains(v))
                 {
-                    ranks.remove(v);
+                    originalRanks.remove(v);
                 }
             }
             rank++; //increment ranking number e.g. rank 0, rank 1, e.t.c
             ranked.clear(); //clear contents of current rank for a new rank
         }
-
+        ranks.clear();
         //System.out.println("#counting "+count);
 
         return selectionRank;
@@ -121,12 +123,8 @@ public class ParetoRankEvaluator implements RankEvaluator {
         String result = ci.getProblem().evaluateFitness(runEvolutionContext, chromosome);
 
         if (result.split(",").length > 1) {
-            synchronized (this) {
-                ranks.add(result);
-            }
+            ranks.add(result);
             chromosome.setMetaData(result);
-            //System.out.println(chromosome.getMetaData());
-            //ranks.add(result);
         } else {
             throw new Exception("Fitness value is in a wrong format!");
         }

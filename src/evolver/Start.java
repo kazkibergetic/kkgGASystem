@@ -29,6 +29,7 @@ import problems.ProblemInterface;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 /**
  * KazKiberGetic GA System (kkgGA) The Start is a 'start button' of the GA
@@ -54,57 +55,62 @@ public class Start {
         FitnessEvaluator fitnessEvaluationOperator = ci.getFitnessEvaluationOperator();
         RunEvolutionContext runEvolutionContext = new RunEvolutionContext();
         runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
+        runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getPopulationSize() * 2));
 
-        // the program will read all files in the provided input folder with
-        // specified in param file extension
-        File folder = new File(Parameters.getInputFolder());
-        File[] listOfFiles = folder.listFiles();
+        try {
+            // the program will read all files in the provided input folder with
+            // specified in param file extension
+            File folder = new File(Parameters.getInputFolder());
+            File[] listOfFiles = folder.listFiles();
 
-        if (listOfFiles != null) {
-            for (File file : listOfFiles) {
-                if (file.isFile() && file.getName().endsWith(Parameters.getFilesExtension())) {
+            if (listOfFiles != null) {
+                for (File file : listOfFiles) {
+                    if (file.isFile() && file.getName().endsWith(Parameters.getFilesExtension())) {
 
-                    // display information about the current file
-                    DisplayInfo.displayStartReadingFile(file.getName());
+                        // display information about the current file
+                        DisplayInfo.displayStartReadingFile(file.getName());
 
-                    // initialize the problem, read dataset from the provided file
-                    problem.initialize(file);
+                        // initialize the problem, read dataset from the provided file
+                        problem.initialize(file);
 
-                    Graph fitnessVsGenerations = new Graph("My Title");
-                    RunEvolution r = null;
+                        Graph fitnessVsGenerations = new Graph("My Title");
+                        RunEvolution r = null;
 
-                    // perform number of experiments, specified in param file
-                    for (int z = 0; z < Parameters.getNumberOfRuns(); z++) {
-                        runEvolutionContext.setProblemResultCache(new ProblemResultCache());
+                        // perform number of experiments, specified in param file
+                        for (int z = 0; z < Parameters.getNumberOfRuns(); z++) {
+                            runEvolutionContext.setProblemResultCache(new ProblemResultCache());
 
-                        FitnessResults fitnessOutput = new FitnessResults(file.getName(), z, fitnessVsGenerations);
-                        runEvolutionContext.setFitnessOutput(fitnessOutput);
+                            FitnessResults fitnessOutput = new FitnessResults(file.getName(), z, fitnessVsGenerations);
+                            runEvolutionContext.setFitnessOutput(fitnessOutput);
 
-                        // display information about the current run
-                        DisplayInfo.displayRun(z);
+                            // display information about the current run
+                            DisplayInfo.displayRun(z);
 
-                        r = new RunEvolution(z, runEvolutionContext);
-                        ResultOutput resultOutput = new ResultOutput(file.getName(), z, r, runEvolutionContext);
-                        resultOutput.finish();
-                        fitnessOutput.finish();
-                    }
-
-                    try {
-                        // display graph
-                        if (!runEvolutionContext.isRankOption()){
-                            fitnessVsGenerations.start(Parameters.getOutputFolder() + "/" + file.getName() + "/");
+                            r = new RunEvolution(z, runEvolutionContext);
+                            ResultOutput resultOutput = new ResultOutput(file.getName(), z, r, runEvolutionContext);
+                            resultOutput.finish();
+                            fitnessOutput.finish();
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+                        try {
+                            // display graph
+                            if (!runEvolutionContext.isRankOption()){
+                                fitnessVsGenerations.start(Parameters.getOutputFolder() + "/" + file.getName() + "/");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        DisplayInfo.displayRunStatistics(r);
+                        DisplayInfo.displayEndReadingFile(file.getName());
+
                     }
-
-                    DisplayInfo.displayRunStatistics(r);
-                    DisplayInfo.displayEndReadingFile(file.getName());
-
                 }
+            } else {
+                throw new IllegalArgumentException("No input files found");
             }
-        } else {
-            throw new IllegalArgumentException("No input files found");
+        } finally {
+            runEvolutionContext.getExecutorService().shutdown();
         }
     }
 }

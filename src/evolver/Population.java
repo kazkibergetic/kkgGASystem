@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -58,14 +56,10 @@ public class Population extends Thread {
 
     // the fittest in the population
     private List<ChromosomeRepresentationInterface> bestIndividuals;
-    private ExecutorService executorService;
 
     Population() {
         chromosomes = new CopyOnWriteArrayList<ChromosomeRepresentationInterface>();
         bestIndividuals = Collections.singletonList(ci.getChromosomeRepresentation());
-        if (executorService == null) {
-            executorService = Executors.newFixedThreadPool(Parameters.getPopulationSize() * 2);
-        }
     }
 
 
@@ -130,12 +124,12 @@ public class Population extends Thread {
 
                 // selects another chromosome for crossover
                 ChromosomeRepresentationInterface ind2 = selection.performSelection(prevPopulation);
-                CrossoverWithMutations crossoverWithMutations = new CrossoverWithMutations(ind, ind2, numberToAdd);
-                futures.add(executorService.submit(crossoverWithMutations));
+                CrossoverWithMutations crossoverWithMutations = new CrossoverWithMutations(runEvolutionContext, ind, ind2, numberToAdd);
+                futures.add(runEvolutionContext.getExecutorService().submit(crossoverWithMutations));
                 numberOfChromosomes += 2;
             } else { // if no crossover was done
-                MutationWithoutCrossover mutationWithoutCrossover = new MutationWithoutCrossover(ind);
-                futures.add(executorService.submit(mutationWithoutCrossover));
+                MutationWithoutCrossover mutationWithoutCrossover = new MutationWithoutCrossover(ind, runEvolutionContext);
+                futures.add(runEvolutionContext.getExecutorService().submit(mutationWithoutCrossover));
                 ++numberOfChromosomes;
             }
         }
@@ -154,11 +148,13 @@ public class Population extends Thread {
         private int numberToAdd;
         private ChromosomeRepresentationInterface ind;
         private ChromosomeRepresentationInterface ind2;
+        private RunEvolutionContext runEvolutionContext;
 
-        private CrossoverWithMutations(ChromosomeRepresentationInterface ind, ChromosomeRepresentationInterface ind2, int numberToAdd) {
+        private CrossoverWithMutations( RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface ind, ChromosomeRepresentationInterface ind2, int numberToAdd) {
             this.numberToAdd = numberToAdd;
             this.ind = ind;
             this.ind2 = ind2;
+            this.runEvolutionContext = runEvolutionContext;
         }
 
         @Override
@@ -173,7 +169,7 @@ public class Population extends Thread {
                 // performs mutation on first offspring with specified in the parameter file probability
                 if (rand.nextFloat() <= Parameters.getMutationProbability()) {
                     Mutation mutation = new Mutation(offsprings.get(0));
-                    mutation1 = executorService.submit(mutation);
+                    mutation1 = runEvolutionContext.getExecutorService().submit(mutation);
                 }
 
                 // if we can add both offsprings to the current population
@@ -182,7 +178,7 @@ public class Population extends Thread {
                     // performs mutation on second offspring with specified in the parameter file probability
                     if (rand.nextFloat() <= Parameters.getMutationProbability()) {
                         Mutation mutation = new Mutation(offsprings.get(1));
-                        mutation2 = executorService.submit(mutation);
+                        mutation2 = runEvolutionContext.getExecutorService().submit(mutation);
                     }
                     if (mutation1 != null) {
                         offsprings.set(0, mutation1.get());
@@ -209,9 +205,11 @@ public class Population extends Thread {
     private class MutationWithoutCrossover implements Runnable {
         private ChromosomeRepresentationInterface ind;
         private Random rand = new Random();
+        private RunEvolutionContext runEvolutionContext;
 
-        private MutationWithoutCrossover(ChromosomeRepresentationInterface ind) {
+        private MutationWithoutCrossover(ChromosomeRepresentationInterface ind, RunEvolutionContext runEvolutionContext) {
             this.ind = ind;
+            this.runEvolutionContext = runEvolutionContext;
         }
 
         @Override
@@ -221,7 +219,7 @@ public class Population extends Thread {
             if (rand.nextFloat() <= Parameters.getMutationProbability()) {
                 Mutation mutation = new Mutation(ind);
                 try {
-                    ind = executorService.submit(mutation).get();
+                    ind = runEvolutionContext.getExecutorService().submit(mutation).get();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -257,7 +255,7 @@ public class Population extends Thread {
                 evaluator.beginIndex = i;
                 evaluator.endIndex = i + 1;
 
-                Future<?> future = executorService.submit(evaluator);
+                Future<?> future = runEvolutionContext.getExecutorService().submit(evaluator);
                 futures.add(future);
             }
             for (Future future : futures) {
@@ -280,9 +278,7 @@ public class Population extends Thread {
      * values
      */
     private void findBestFitness() {
-        List<ChromosomeRepresentationInterface> chromosomesCopy = new ArrayList<>(chromosomes);
-        chromosomesCopy.sort(new ChromosomeFitnessComparator());
-        chromosomes = chromosomesCopy;
+        chromosomes.sort(new ChromosomeFitnessComparator());
         bestIndividuals = chromosomes;
     }
 

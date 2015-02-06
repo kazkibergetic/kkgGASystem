@@ -2,6 +2,8 @@ package evolver;
 
 import output.statistics.FitnessResults;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * RunEvolutionContext.
  *
@@ -11,6 +13,15 @@ public class RunEvolutionContext {
     private boolean rankOption;
     private ProblemResultCache problemResultCache;
     private FitnessResults fitnessOutput;
+    private ExecutorService executorService;
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     public ProblemResultCache getProblemResultCache() {
         return problemResultCache;
