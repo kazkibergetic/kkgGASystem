@@ -278,6 +278,7 @@ public class Population extends Thread {
      * values
      */
     private void findBestFitness() {
+        chromosomes = new ArrayList<>(chromosomes);
         chromosomes.sort(new ChromosomeFitnessComparator());
         bestIndividuals = chromosomes;
     }
