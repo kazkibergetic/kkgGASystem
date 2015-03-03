@@ -73,7 +73,7 @@ public class Start {
                         // initialize the problem, read dataset from the provided file
                         problem.initialize(file);
 
-                        Graph fitnessVsGenerations = new Graph("My Title");
+                        Graph fitnessVsGenerations = null;
                         RunEvolution r = null;
 
                         // perform number of experiments, specified in param file
