@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
 
 
 public class ParametersInitialization extends Parameters {
@@ -135,7 +136,7 @@ public class ParametersInitialization extends Parameters {
 			}
 
 			if (ParametersInitialization.properties.getProperty(InputParametersNames.PROCESSORS) == null) {
-				processors = Runtime.getRuntime().availableProcessors()-1;
+				processors = Runtime.getRuntime().availableProcessors();
 			}
 			else
 			{
@@ -146,6 +147,18 @@ public class ParametersInitialization extends Parameters {
 			.displayInitialization(
 					InputParametersNames.PROCESSORS,
 					String.valueOf(processors));
+
+            if (ParametersInitialization.properties.getProperty(InputParametersNames.SEED) == null) {
+                seed = System.currentTimeMillis();
+            }
+            else
+            {
+                seed = Long.parseLong(ParametersInitialization.properties.getProperty(InputParametersNames.SEED).trim());
+            }
+            DisplayInfo
+                    .displayInitialization(
+                            InputParametersNames.SEED,
+                            String.valueOf(seed));
 
 			if (ParametersInitialization.properties.getProperty(InputParametersNames.INPUT_FOLDER) == null) {
 				throw new ParametersInitializationException(

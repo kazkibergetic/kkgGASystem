@@ -27,6 +27,8 @@ stat-out                              = output/reduct
 
 ;processors							  = 4
 
+;seed                                 = 1
+
 elitism-size                          = 5
 
 best-individual-out                   = 5

@@ -38,6 +38,8 @@ public class InputParametersNames {
 	
 	public static final String PROCESSORS = "processors";
 
+	public static final String SEED = "seed";
+
 	public static final String ELITISM_SIZE = "elitism-size";
 
 	public static final String BEST_INDIVIDUAL_OUT = "best-individual-out";

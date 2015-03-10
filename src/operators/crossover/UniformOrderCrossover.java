@@ -5,6 +5,7 @@ package operators.crossover;
 
 import chromosome.ChromosomeRepresentationInterface;
 import params.ClassInitialization;
+import params.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class UniformOrderCrossover implements CrossoverInterface {
 		
 		ArrayList<Boolean> mask = new ArrayList<Boolean>();
 		
-		Random rand = new Random();
+		Random rand = new Random(Parameters.getSeed());
 				
 		if(parent1.getSize() == parent2.getSize())
 		{

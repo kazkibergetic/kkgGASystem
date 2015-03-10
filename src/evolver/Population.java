@@ -101,7 +101,7 @@ public class Population extends Thread {
         int populationSize = Parameters.getPopulationSize();
         int numberOfChromosomes = chromosomes.size();
 
-        Random rand = new Random();
+        Random rand = new Random(Parameters.getSeed());
 
         // Elitism. We want to keep the best individual from the previous generation
         List<ChromosomeRepresentationInterface> prevPopulationIndividuals = prevPopulation.getBestIndividuals();
@@ -144,7 +144,7 @@ public class Population extends Thread {
     }
 
     private class CrossoverWithMutations implements Runnable {
-        private Random rand = new Random();
+        private Random rand = new Random(Parameters.getSeed());
         private int numberToAdd;
         private ChromosomeRepresentationInterface ind;
         private ChromosomeRepresentationInterface ind2;
@@ -204,7 +204,7 @@ public class Population extends Thread {
 
     private class MutationWithoutCrossover implements Runnable {
         private ChromosomeRepresentationInterface ind;
-        private Random rand = new Random();
+        private Random rand = new Random(Parameters.getSeed());
         private RunEvolutionContext runEvolutionContext;
 
         private MutationWithoutCrossover(ChromosomeRepresentationInterface ind, RunEvolutionContext runEvolutionContext) {

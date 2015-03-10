@@ -55,7 +55,7 @@ public class Start {
         FitnessEvaluator fitnessEvaluationOperator = ci.getFitnessEvaluationOperator();
         RunEvolutionContext runEvolutionContext = new RunEvolutionContext();
         runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
-        runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getPopulationSize() * 2));
+        runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
 
         try {
             // the program will read all files in the provided input folder with

@@ -20,7 +20,8 @@ public class Parameters {
 	protected static int chromosome_size;
 	protected static int tournament_size;
 	protected static int processors;
-	
+	protected static long seed;
+
 	protected static CrossoverInterface crossover_operator;
 	protected static MutationInterface mutation_operator;
 	protected static SelectionInterface selection_operator;
@@ -100,8 +101,15 @@ public class Parameters {
 	{
 		return tournament_size;
 	}
-	
-	/** Receives the statistics output folder
+
+    /**
+     * @return seed for all randoms
+     */
+    public static long getSeed() {
+        return seed;
+    }
+
+    /** Receives the statistics output folder
 	 * @return statistics output folder name
 	 */
 	public static String getOutputFolder()

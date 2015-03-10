@@ -21,7 +21,7 @@ public class TournamentSelection implements SelectionInterface {
 	@Override
 	public ChromosomeRepresentationInterface performSelection(Population p)
 	{
-		Random rand = new Random();
+		Random rand = new Random(Parameters.getSeed());
 	//	System.out.println("Selection");
 		int randomNumber = rand.nextInt(p.getChromosomes().size());
 		double minFitness = p.getChromosomes().get(randomNumber).getFitness();

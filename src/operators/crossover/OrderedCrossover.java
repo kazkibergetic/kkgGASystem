@@ -6,6 +6,7 @@ package operators.crossover;
 import chromosome.ChromosomeRepresentationInterface;
 import exceptions.ChromomesInequalityException;
 import params.ClassInitialization;
+import params.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class OrderedCrossover implements CrossoverInterface {
 				offspring1.initializeDefault(len);
 				offspring2.initializeDefault(len);
 				
-				Random rand = new Random();
+				Random rand = new Random(Parameters.getSeed());
 				int p1 = rand.nextInt(len);
 				int p2 = rand.nextInt(len);
 				

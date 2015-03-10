@@ -4,6 +4,7 @@
 package operators.mutation;
 
 import chromosome.ChromosomeRepresentationInterface;
+import params.Parameters;
 
 import java.util.Random;
 
@@ -17,7 +18,7 @@ public class ReciprocalExchange implements MutationInterface {
      */
     @Override
     public ChromosomeRepresentationInterface performMutation(ChromosomeRepresentationInterface ind) {
-        Random rand = new Random();
+        Random rand = new Random(Parameters.getSeed());
 
         int position1 = rand.nextInt(ind.getSize());
         int position2 = rand.nextInt(ind.getSize());

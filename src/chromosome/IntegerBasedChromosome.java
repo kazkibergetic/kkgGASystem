@@ -16,12 +16,14 @@
 package chromosome;
 
 import params.ClassInitialization;
+import params.Parameters;
 import problems.Points;
 import problems.ProblemInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -76,7 +78,7 @@ public class IntegerBasedChromosome implements ChromosomeRepresentationInterface
             range.add(points.get(i).id);
         }
 
-        Collections.shuffle(range);
+        Collections.shuffle(range, new Random(Parameters.getSeed()));
         this.chromosome = range;
     }
 
