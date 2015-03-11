@@ -4,8 +4,11 @@
 package problems.RoughSets.bireduct;
 
 import chromosome.ChromosomeRepresentationInterface;
+import com.google.common.base.Charsets;
 import evolver.ProblemResultCache;
 import evolver.RunEvolutionContext;
+import output.DisplayInfo;
+import params.Parameters;
 import problems.Points;
 import problems.ProblemInterface;
 
@@ -13,7 +16,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +46,6 @@ public class Problem implements ProblemInterface {
     private static int numRows, numColumns, numConditionalAttributes;
 
     public void initialize(File file) {
-        // TODO Auto-generated method stub
         numRows = 0;
         numColumns = 0;
         numConditionalAttributes = 0;
@@ -47,10 +54,8 @@ public class Problem implements ProblemInterface {
         try {
             readDataSet(file);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -60,33 +65,60 @@ public class Problem implements ProblemInterface {
      * @param file : file to read dataset from
      */
     private void readDataSet(File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()), Charsets.UTF_8);
+        String delimiter = Parameters.getDelimiter();
 
-        String line;
-        String[] items = new String[]{};
-        int row = 0;
+        boolean nameColumnExists = Parameters.isNameColumnExists();
+        int nameColumnPosition = Parameters.getNameColumnPosition();
+        int decisionColumnPosition = Parameters.getDecisionColumnPosition();
 
-        while ((line = reader.readLine()) != null) {
+        for (String line : lines) {
+            ++numRows;
+
             line = line.trim();
-            numRows++;
+            String[] items = line.split(delimiter);
+            List<String> strings = new ArrayList<String>(Arrays.asList(items));
 
-            items = line.split(",");
-
-            List<String> columns = new ArrayList<String>();
-            for (int col = 0; col < items.length; col++) {
-                columns.add(items[col]);
+            if (!nameColumnExists){
+                strings.add(0, "");
+            } else if (nameColumnPosition != 0) {
+                for (int i = 0; i < items.length; ++i) {
+                    if (i != nameColumnPosition && i != decisionColumnPosition) {
+                        swap(strings, i, nameColumnPosition);
+                        break;
+                    }
+                }
             }
-            table.add(columns);
-            // System.out.println(table.row(row).hashCode());
-            row++;
 
+            if (decisionColumnPosition != -1){
+                swap(strings, items.length - 1, decisionColumnPosition);
+            }
+
+            table.add(strings);
         }
-        reader.close();
-        numConditionalAttributes = items.length - 2;
-        numColumns = items.length;
+
+        List<String> row = table.get(0);
+        int columnCount = row.size();
+        numConditionalAttributes = columnCount - 2;
+        numColumns = columnCount;
 
         createPoints(numConditionalAttributes + numRows);
 
+        for (int j = 0; j < 2; ++j) {
+            for (int i = 0; i < 5; ++i) {
+                List<String> currentRow = table.get(i);
+                String var = j == 0? String.format("Name #%d ", i + 1): String.format("Decision #%d ", i + 1);
+                String value = j == 0? currentRow.get(0): currentRow.get(currentRow.size() - 1);
+                DisplayInfo.displayInitialization(var, value);
+            }
+        }
+
+    }
+
+    private void swap(List<String> strings, int i, int j){
+        String tmp = strings.get(i);
+        strings.set(i, strings.get(j));
+        strings.set(j, tmp);
     }
 
     /**

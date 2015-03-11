@@ -29,6 +29,11 @@ stat-out                              = output/reduct
 
 ;seed                                 = 1
 
+delimiter                             =","
+name-column                           =true
+name-column-position                  =0
+decision-attribute-position           =-1
+
 elitism-size                          = 5
 
 best-individual-out                   = 5

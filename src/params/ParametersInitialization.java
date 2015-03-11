@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Random;
 
 
 public class ParametersInitialization extends Parameters {
@@ -177,6 +176,52 @@ public class ParametersInitialization extends Parameters {
 						InputParametersNames.FILE_EXTENSION).trim();
 			}
 
+            if (ParametersInitialization.properties
+                    .getProperty(InputParametersNames.DELIMITER) == null) {
+                throw new ParametersInitializationException(
+                        InputParametersNames.DELIMITER);
+            } else {
+                delimiter = ParametersInitialization.properties.getProperty(
+                        InputParametersNames.DELIMITER).trim();
+                if (delimiter.length() >= 3) {
+                    delimiter = delimiter.substring(1, delimiter.length() - 1);
+                }
+            }
+
+            DisplayInfo.displayInitialization(InputParametersNames.DELIMITER, String.valueOf(delimiter));
+
+            if (ParametersInitialization.properties
+                    .getProperty(InputParametersNames.NAME_COLUMN) == null) {
+                throw new ParametersInitializationException(
+                        InputParametersNames.NAME_COLUMN);
+            } else {
+                nameColumnExists = Boolean.parseBoolean(ParametersInitialization.properties.getProperty(
+                        InputParametersNames.NAME_COLUMN).trim());
+            }
+
+            DisplayInfo.displayInitialization(InputParametersNames.NAME_COLUMN, String.valueOf(nameColumnExists));
+
+            if (ParametersInitialization.properties
+                    .getProperty(InputParametersNames.NAME_COLUMN_POSITION) == null) {
+                throw new ParametersInitializationException(
+                        InputParametersNames.NAME_COLUMN_POSITION);
+            } else {
+                nameColumnPosition = Integer.parseInt(ParametersInitialization.properties.getProperty(
+                        InputParametersNames.NAME_COLUMN_POSITION).trim());
+            }
+
+            DisplayInfo.displayInitialization(InputParametersNames.NAME_COLUMN_POSITION, String.valueOf(nameColumnPosition));
+
+            if (ParametersInitialization.properties
+                    .getProperty(InputParametersNames.DECISION_ATTRIBUTE_POSITION) == null) {
+                throw new ParametersInitializationException(
+                        InputParametersNames.DECISION_ATTRIBUTE_POSITION);
+            } else {
+                decisionColumnPosition = Integer.parseInt(ParametersInitialization.properties.getProperty(
+                        InputParametersNames.DECISION_ATTRIBUTE_POSITION).trim());
+            }
+
+            DisplayInfo.displayInitialization(InputParametersNames.DECISION_ATTRIBUTE_POSITION, String.valueOf(decisionColumnPosition));
 
 			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.STATISTICS_OUTPUT) == null) {

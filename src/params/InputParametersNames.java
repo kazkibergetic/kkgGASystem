@@ -40,6 +40,14 @@ public class InputParametersNames {
 
 	public static final String SEED = "seed";
 
+	public static final String DELIMITER = "delimiter";
+
+	public static final String NAME_COLUMN = "name-column";
+
+	public static final String NAME_COLUMN_POSITION  = "name-column-position";
+
+	public static final String DECISION_ATTRIBUTE_POSITION  = "decision-attribute-position";
+
 	public static final String ELITISM_SIZE = "elitism-size";
 
 	public static final String BEST_INDIVIDUAL_OUT = "best-individual-out";

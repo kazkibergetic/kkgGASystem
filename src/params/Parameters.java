@@ -21,6 +21,11 @@ public class Parameters {
 	protected static int tournament_size;
 	protected static int processors;
 	protected static long seed;
+	protected static String delimiter;
+	protected static boolean nameColumnExists;
+	protected static int nameColumnPosition;
+	protected static int decisionColumnPosition;
+
 
 	protected static CrossoverInterface crossover_operator;
 	protected static MutationInterface mutation_operator;
@@ -133,5 +138,21 @@ public class Parameters {
 
     public static int getBestIndividualsOut() {
         return best_individuals_out;
+    }
+
+    public static String getDelimiter() {
+        return delimiter;
+    }
+
+    public static boolean isNameColumnExists() {
+        return nameColumnExists;
+    }
+
+    public static int getNameColumnPosition() {
+        return nameColumnPosition;
+    }
+
+    public static int getDecisionColumnPosition() {
+        return decisionColumnPosition;
     }
 }
