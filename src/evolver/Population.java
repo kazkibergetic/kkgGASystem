@@ -108,6 +108,7 @@ public class Population extends Thread {
         List<ChromosomeRepresentationInterface> prevPopulationBestIndividuals = prevPopulationIndividuals.subList(0, Parameters.getElitismSize());
         if (numberOfChromosomes + prevPopulationBestIndividuals.size() <= populationSize) {
             chromosomes.addAll(prevPopulationBestIndividuals);
+            numberOfChromosomes = chromosomes.size();
         } else {
             throw new IllegalStateException("Current population size in not equal to desired population size.");
         }
