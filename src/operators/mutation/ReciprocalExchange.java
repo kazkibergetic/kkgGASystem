@@ -4,6 +4,7 @@
 package operators.mutation;
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
 import params.Parameters;
 
 import java.util.Random;
@@ -17,8 +18,8 @@ public class ReciprocalExchange implements MutationInterface {
      * @see operators.mutation.MutationInterface#performMutation(chromosome.ChromosomeRepresentationInterface)
      */
     @Override
-    public ChromosomeRepresentationInterface performMutation(ChromosomeRepresentationInterface ind) {
-        Random rand = new Random(Parameters.getSeed());
+    public ChromosomeRepresentationInterface performMutation(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface ind) {
+        Random rand = runEvolutionContext.getRandom();
 
         int position1 = rand.nextInt(ind.getSize());
         int position2 = rand.nextInt(ind.getSize());

@@ -29,6 +29,7 @@ import problems.ProblemInterface;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.Executors;
 
 /**
@@ -56,6 +57,7 @@ public class Start {
         RunEvolutionContext runEvolutionContext = new RunEvolutionContext();
         runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
         runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
+        runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
 
         try {
             // the program will read all files in the provided input folder with

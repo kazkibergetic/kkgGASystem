@@ -4,6 +4,7 @@
 package operators.crossover;
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
 import params.ClassInitialization;
 import params.Parameters;
 
@@ -25,6 +26,7 @@ public class UniformOrderCrossover implements CrossoverInterface {
 	 */
 	@Override
 	public List<ChromosomeRepresentationInterface> performCrossover(
+            RunEvolutionContext runEvolutionContext,
 			ChromosomeRepresentationInterface parent1,
 			ChromosomeRepresentationInterface parent2) {
 		
@@ -37,7 +39,7 @@ public class UniformOrderCrossover implements CrossoverInterface {
 		
 		ArrayList<Boolean> mask = new ArrayList<Boolean>();
 		
-		Random rand = new Random(Parameters.getSeed());
+		Random rand = runEvolutionContext.getRandom();
 				
 		if(parent1.getSize() == parent2.getSize())
 		{

@@ -70,7 +70,7 @@ public class IntegerBasedChromosome implements ChromosomeRepresentationInterface
      * @see chromosome.ChromosomeRepresentationInterface#generateChromosome()
      */
     @Override
-    public void generateChromosome() {
+    public void generateChromosome(Random random) {
         List<Integer> range = new ArrayList<>(problem.getSizeOfChromosome());
 
         List<Points> points = problem.getPoints();
@@ -78,7 +78,7 @@ public class IntegerBasedChromosome implements ChromosomeRepresentationInterface
             range.add(points.get(i).id);
         }
 
-        Collections.shuffle(range, new Random(Parameters.getSeed()));
+        Collections.shuffle(range, random);
         this.chromosome = range;
     }
 

@@ -4,6 +4,7 @@
 package operators.crossover;
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
 import exceptions.ChromomesInequalityException;
 import params.ClassInitialization;
 
@@ -27,6 +28,7 @@ public class CycleCrossover implements CrossoverInterface {
 	 */
 	@Override
 	public List<ChromosomeRepresentationInterface> performCrossover(
+            RunEvolutionContext runEvolutionContext,
 			ChromosomeRepresentationInterface ind1,
 			ChromosomeRepresentationInterface ind2) throws ChromomesInequalityException {
 		

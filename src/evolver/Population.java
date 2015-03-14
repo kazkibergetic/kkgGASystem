@@ -72,9 +72,8 @@ public class Population extends Thread {
         ClassInitialization chromosome = new ClassInitialization();
         for (int i = 0; i < Parameters.getPopulationSize(); i++) {
 
-            ChromosomeRepresentationInterface ch = chromosome
-                    .getChromosomeRepresentation();
-            ch.generateChromosome();
+            ChromosomeRepresentationInterface ch = chromosome.getChromosomeRepresentation();
+            ch.generateChromosome(runEvolutionContext.getRandom());
             chromosomes.add(ch);
         }
         try {
@@ -101,8 +100,6 @@ public class Population extends Thread {
         int populationSize = Parameters.getPopulationSize();
         int numberOfChromosomes = chromosomes.size();
 
-        Random rand = new Random(Parameters.getSeed());
-
         // Elitism. We want to keep the best individual from the previous generation
         List<ChromosomeRepresentationInterface> prevPopulationIndividuals = prevPopulation.getBestIndividuals();
         List<ChromosomeRepresentationInterface> prevPopulationBestIndividuals = prevPopulationIndividuals.subList(0, Parameters.getElitismSize());
@@ -116,15 +113,15 @@ public class Population extends Thread {
         List<Future> futures = new ArrayList<>(populationSize);
         while (numberOfChromosomes < populationSize) {
             // selects one chromosome based on the selection method
-            ChromosomeRepresentationInterface ind = selection.performSelection(prevPopulation);
+            ChromosomeRepresentationInterface ind = selection.performSelection(runEvolutionContext, prevPopulation);
 
             // performs crossover with specified in the parameter file
             // probability
-            if (rand.nextFloat() <= Parameters.getCrossoverProbability()) {
+            if (runEvolutionContext.getRandom().nextFloat() <= Parameters.getCrossoverProbability()) {
                 int numberToAdd = populationSize - numberOfChromosomes >= 2 ? 2 : 1;
 
                 // selects another chromosome for crossover
-                ChromosomeRepresentationInterface ind2 = selection.performSelection(prevPopulation);
+                ChromosomeRepresentationInterface ind2 = selection.performSelection(runEvolutionContext, prevPopulation);
                 CrossoverWithMutations crossoverWithMutations = new CrossoverWithMutations(runEvolutionContext, ind, ind2, numberToAdd);
                 futures.add(runEvolutionContext.getExecutorService().submit(crossoverWithMutations));
                 numberOfChromosomes += 2;
@@ -145,7 +142,6 @@ public class Population extends Thread {
     }
 
     private class CrossoverWithMutations implements Runnable {
-        private Random rand = new Random(Parameters.getSeed());
         private int numberToAdd;
         private ChromosomeRepresentationInterface ind;
         private ChromosomeRepresentationInterface ind2;
@@ -162,14 +158,15 @@ public class Population extends Thread {
         public void run() {
             try {
                 // performs crossover
-                List<ChromosomeRepresentationInterface> offsprings = new ArrayList<>(crossover.performCrossover(ind, ind2));
+                List<ChromosomeRepresentationInterface> offsprings = new ArrayList<>(crossover.performCrossover(runEvolutionContext, ind, ind2));
+                Random rand = runEvolutionContext.getRandom();
 
                 Future<ChromosomeRepresentationInterface> mutation1 = null;
                 Future<ChromosomeRepresentationInterface> mutation2 = null;
 
                 // performs mutation on first offspring with specified in the parameter file probability
                 if (rand.nextFloat() <= Parameters.getMutationProbability()) {
-                    Mutation mutation = new Mutation(offsprings.get(0));
+                    Mutation mutation = new Mutation(offsprings.get(0), runEvolutionContext);
                     mutation1 = runEvolutionContext.getExecutorService().submit(mutation);
                 }
 
@@ -178,7 +175,7 @@ public class Population extends Thread {
 
                     // performs mutation on second offspring with specified in the parameter file probability
                     if (rand.nextFloat() <= Parameters.getMutationProbability()) {
-                        Mutation mutation = new Mutation(offsprings.get(1));
+                        Mutation mutation = new Mutation(offsprings.get(1), runEvolutionContext);
                         mutation2 = runEvolutionContext.getExecutorService().submit(mutation);
                     }
                     if (mutation1 != null) {
@@ -205,7 +202,6 @@ public class Population extends Thread {
 
     private class MutationWithoutCrossover implements Runnable {
         private ChromosomeRepresentationInterface ind;
-        private Random rand = new Random(Parameters.getSeed());
         private RunEvolutionContext runEvolutionContext;
 
         private MutationWithoutCrossover(ChromosomeRepresentationInterface ind, RunEvolutionContext runEvolutionContext) {
@@ -217,8 +213,8 @@ public class Population extends Thread {
         public void run() {
             // performs mutation on the chromosome with specified in the
             // parameter file probability
-            if (rand.nextFloat() <= Parameters.getMutationProbability()) {
-                Mutation mutation = new Mutation(ind);
+            if (runEvolutionContext.getRandom().nextFloat() <= Parameters.getMutationProbability()) {
+                Mutation mutation = new Mutation(ind, runEvolutionContext);
                 try {
                     ind = runEvolutionContext.getExecutorService().submit(mutation).get();
                 } catch (Exception e) {
@@ -331,14 +327,16 @@ public class Population extends Thread {
     private class Mutation implements Callable<ChromosomeRepresentationInterface> {
 
         private ChromosomeRepresentationInterface ind;
+        private RunEvolutionContext runEvolutionContext;
 
-        private Mutation(ChromosomeRepresentationInterface ind) {
+        private Mutation(ChromosomeRepresentationInterface ind, RunEvolutionContext runEvolutionContext) {
             this.ind = ind;
+            this.runEvolutionContext = runEvolutionContext;
         }
 
         @Override
         public ChromosomeRepresentationInterface call() throws Exception {
-            return mutation.performMutation(ind);
+            return mutation.performMutation(runEvolutionContext, ind);
         }
 
     }

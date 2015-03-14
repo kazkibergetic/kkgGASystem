@@ -4,6 +4,7 @@
 package operators.crossover;
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
 import exceptions.ChromomesInequalityException;
 
 import java.util.List;
@@ -16,6 +17,6 @@ public interface CrossoverInterface {
 
 	
 	
-	List<ChromosomeRepresentationInterface> performCrossover(ChromosomeRepresentationInterface parent1, ChromosomeRepresentationInterface parent2) throws ChromomesInequalityException;
+	List<ChromosomeRepresentationInterface> performCrossover(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface parent1, ChromosomeRepresentationInterface parent2) throws ChromomesInequalityException;
 
 }

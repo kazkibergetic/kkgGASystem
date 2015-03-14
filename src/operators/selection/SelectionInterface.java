@@ -5,6 +5,7 @@ package operators.selection;
 
 import chromosome.ChromosomeRepresentationInterface;
 import evolver.Population;
+import evolver.RunEvolutionContext;
 
 /**
  * @author or13uw
@@ -13,5 +14,5 @@ import evolver.Population;
 public interface SelectionInterface {
 
 	
-	ChromosomeRepresentationInterface performSelection(Population p);
+	ChromosomeRepresentationInterface performSelection(RunEvolutionContext runEvolutionContext,  Population p);
 }

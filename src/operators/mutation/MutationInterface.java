@@ -4,6 +4,7 @@
 package operators.mutation;
 
 import chromosome.ChromosomeRepresentationInterface;
+import evolver.RunEvolutionContext;
 
 /**
  * @author or13uw
@@ -12,5 +13,5 @@ import chromosome.ChromosomeRepresentationInterface;
 public interface MutationInterface {
 
 	
-	ChromosomeRepresentationInterface performMutation(ChromosomeRepresentationInterface ind);
+	ChromosomeRepresentationInterface performMutation(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface ind);
 }

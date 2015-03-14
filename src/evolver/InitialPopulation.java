@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import chromosome.ChromosomeRepresentationInterface;
 import params.ClassInitialization;
@@ -47,7 +48,7 @@ public class InitialPopulation implements Runnable {
 		for (int i = beginIndex; i < endIndex; i++) {
 			ChromosomeRepresentationInterface ch = chromosome
 					.getChromosomeRepresentation();
-			ch.generateChromosome();
+			ch.generateChromosome(new Random());
 			//System.out.println(ch.getChromosome());
 			l.add(ch);
 		}

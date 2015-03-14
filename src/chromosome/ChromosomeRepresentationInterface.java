@@ -17,6 +17,7 @@
 package chromosome;
 
 import java.util.List;
+import java.util.Random;
 
 /**
 * KazKiberGetic GA System (kkgGA)
@@ -40,7 +41,7 @@ public interface ChromosomeRepresentationInterface<T> extends Cloneable {
 	
 	/**Generates random chromosome
 	 */
-	void generateChromosome();
+	void generateChromosome(Random random);
 	
 	/**Replaces the current chromosome's genes with the provided ones
 	 * @param newChromosome : set of genes to replace current genes

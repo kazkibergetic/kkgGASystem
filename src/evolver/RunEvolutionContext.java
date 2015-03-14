@@ -2,6 +2,7 @@ package evolver;
 
 import output.statistics.FitnessResults;
 
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -14,6 +15,7 @@ public class RunEvolutionContext {
     private ProblemResultCache problemResultCache;
     private FitnessResults fitnessOutput;
     private ExecutorService executorService;
+    private Random random;
 
     public ExecutorService getExecutorService() {
         return executorService;
@@ -45,5 +47,13 @@ public class RunEvolutionContext {
 
     public void setRankOption(boolean rankOption) {
         this.rankOption = rankOption;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public void setRandom(Random random) {
+        this.random = random;
     }
 }
