@@ -4,8 +4,6 @@
 package output.statistics;
 
 import chromosome.ChromosomeRepresentationInterface;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import evolver.Population;
 import evolver.RunEvolutionContext;
 import output.Graph;
@@ -13,6 +11,8 @@ import params.Parameters;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author or13uw
@@ -52,15 +52,20 @@ public class FitnessResults implements StatisticsInterface {
             statGraph.addValues(generation, current.getAverageFitness(), current.getBestFitness());
         } else {
 
-            Multimap<Double, Integer> ranks = ArrayListMultimap.create();
+            Map<Double, Integer> ranks = new TreeMap<>();
             for (ChromosomeRepresentationInterface chromosome : current.getChromosomes()) {
                 Double rank = chromosome.getFitness();
-                ranks.put(rank, 1);
+                if (ranks.containsKey(rank)){
+                    Integer value = ranks.get(rank);
+                    ranks.put(rank, value + 1);
+                } else {
+                    ranks.put(rank, 1);
+                }
             }
             StringBuilder builder = new StringBuilder();
-            builder.append("generation: "+generation).append("\n");
+            builder.append("generation: ").append(generation).append("\n");
             for (Double rank : ranks.keySet()) {
-                builder.append(rank).append(":").append(ranks.get(rank).size()).append("\n");
+                builder.append(rank).append(":").append(ranks.get(rank)).append("\n");
             }
             String s = builder.toString();
             writer.print(s);

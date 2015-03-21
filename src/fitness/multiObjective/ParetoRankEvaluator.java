@@ -7,6 +7,7 @@ import params.ClassInitialization;
 import params.Parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,12 +17,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ParetoRankEvaluator implements RankEvaluator {
 
-    private static List<String> ranks = new CopyOnWriteArrayList<>();
+    protected static List<String> ranks = new CopyOnWriteArrayList<>();
     ClassInitialization ci = new ClassInitialization();
+    protected int populationSize = Parameters.getPopulationSize();
 
     /**
      * complete ranking of dual objectives
-     * <p>
+     * <p/>
      * #sample ranked data
      * 2,1000 #Rank:1
      * 4,600  #Rank:1
@@ -32,85 +34,77 @@ public class ParetoRankEvaluator implements RankEvaluator {
 
     @SuppressWarnings("unchecked")
     public List<Double> paretoCalculations() {
-        ArrayList<String> rankedLevels = new ArrayList<String>();
-        ArrayList<String> originalRanks = new ArrayList<>(ranks);
-        ArrayList<String> rankCopy = new ArrayList<>(ranks);
-        ArrayList<Double> selectionRank = new ArrayList<Double>();
-        //int count=0;
+        List<Double> calculatedRanks = new ArrayList<>();
+        List<List<Double>> originalObjectives = parseObjectiveSets(new ArrayList<>(ranks));
+        int objectiveCount = originalObjectives.get(0).size();
+        List<List<Double>> objectiveSets = new ArrayList<>(originalObjectives);
 
         int rank = 1;
 
-        Collections.sort(originalRanks); //sort to arrange first objective in ascending manner : NB: small values are best
-        //System.out.println("#SORTED");
         //replace with a more efficient later
-        for(int i=0; i<Parameters.getPopulationSize();i++)
-        {
-            selectionRank.add(Double.POSITIVE_INFINITY); //fill with dump values to enable set in second loop
+        for (int i = 0; i < populationSize; i++) {
+            calculatedRanks.add(Double.POSITIVE_INFINITY); //fill with dump values to enable set in second loop
         }
 
-        for(int i=0; i<Parameters.getPopulationSize();i++)
-        {
-            ArrayList<Double> ranked = new ArrayList<>();  //keep records of currently ranked level. eg. rank 0, 1, etc
-            //ranked.add(Double.parseDouble(ranks2.get(0).split(",")[1]));
-            for(int j=0; j<originalRanks.size();j++)
-            {
-                String[] sp = originalRanks.get(j).split(","); // originalRanks.add("2,1000")
-                //check if second objective exists in currently ranked values
-                if(isExistIndexPareto(ranked,Double.parseDouble(sp[1])))
-                {
-                    ranked.add((Double.parseDouble(sp[1])));
-                    //ranked.get(j);
-                    if(!rankedLevels.contains(originalRanks.get(j))) // records of ranked values from ranks
-                    {
-                        rankedLevels.add(originalRanks.get(j));
-                    }
-                    //ranks2.remove(rank);
-                    //System.out.println(sp[0]+","+sp[1]+" #Rank:"+rank);
-                    //set appropriate indexes with ranked values
-                    //selectionRank.add((double) rank);
-                    int ind = returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]);
-                    selectionRank.set(ind,(double) rank);
+        List<Double> emptyObjective = Collections.nCopies(objectiveCount, Double.POSITIVE_INFINITY);
 
-                    //selectionRank.set(GenerateMask.returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]),(double) rank);
-                    //count++;
-                    //System.out.println("#outmask"+GenerateMask.returnIndexS(selectionRank,rankCopy,sp[0]+","+sp[1]));
-                }
-                //System.out.println(originalRanks.get(j));
-            }
-            //remove occurences of similar ranks from main array
-            for(String v:rankedLevels)
-            {
-                while(originalRanks.contains(v))
-                {
-                    originalRanks.remove(v);
-                }
+        while (Collections.frequency(objectiveSets, emptyObjective) != objectiveSets.size()) {
+            List<Integer> nonDominatedIndividualIndexes = findNonDominatedIndividualIndexes(objectiveSets);
+            for (Integer j : nonDominatedIndividualIndexes) {
+                calculatedRanks.set(j, (double) rank);
+                objectiveSets.set(j, emptyObjective);
             }
             rank++; //increment ranking number e.g. rank 0, rank 1, e.t.c
-            ranked.clear(); //clear contents of current rank for a new rank
         }
         ranks.clear();
         //System.out.println("#counting "+count);
 
-        return selectionRank;
+        return calculatedRanks;
     }
 
-    private boolean isExistIndexPareto(List<Double> c1, Double value) {
-        boolean b = true;
+    protected List<Integer> findNonDominatedIndividualIndexes(List<List<Double>> objectiveSets) {
+        List<Integer> index = new ArrayList<>();
+        for (int i = 0; i < objectiveSets.size(); i++) {
+            List<Double> selectedObjectives = objectiveSets.get(i);
 
-        for (int i = 0; i < c1.size(); i++) {
-            b = b && (value <= c1.get(i));
-        }
-        return b;
-    }
-
-    private int returnIndexS(List<Double> parent, List<String> c1, String value) {
-        for (int i = 0; i < c1.size(); i++) {
-            if (value.equals(c1.get(i)) && (parent.get(i) == Double.POSITIVE_INFINITY)) //ensure index doesnt already exist
-            {
-                return i;
+            if (isNotDominatedByAnyIndividual(selectedObjectives, objectiveSets)) {
+                index.add(i);
             }
         }
-        return -1;
+        return index;
+    }
+
+    protected boolean isNotDominatedByAnyIndividual(List<Double> selectedObjectives, List<List<Double>> objectiveSets) {
+        boolean notDominated = true;
+
+        int objectivesCount = objectiveSets.get(0).size();
+        for (List<Double> objectiveSet : objectiveSets) {
+            boolean notDominatedByOneIndividual = false;
+            boolean notAllEqual = false;
+            for (int j = 0; j < objectivesCount; j++) {
+                Double selectedObjective = selectedObjectives.get(j);
+                Double currentObjective = objectiveSet.get(j);
+
+                notAllEqual = notAllEqual || !(selectedObjective.equals(currentObjective));
+                notDominatedByOneIndividual = notDominatedByOneIndividual || (selectedObjective < currentObjective);
+            }
+            notDominated = notDominated && (notDominatedByOneIndividual || !notAllEqual);
+        }
+        return notDominated;
+    }
+
+    protected List<List<Double>> parseObjectiveSets(List<String> originalObjectiveSets) {
+        List<List<Double>> originalObjectives = new ArrayList<>();
+        for (String s : originalObjectiveSets) {
+            List<String> originalObjectiveList = Arrays.asList(s.split("\\s*,\\s*"));
+
+            List<Double> individualObjective = new ArrayList<>();
+            for (String str : originalObjectiveList) {
+                individualObjective.add(Double.parseDouble(str));
+            }
+            originalObjectives.add(individualObjective);
+        }
+        return originalObjectives;
     }
 
     @Override
