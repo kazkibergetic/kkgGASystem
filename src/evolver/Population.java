@@ -161,13 +161,9 @@ public class Population extends Thread {
                 List<ChromosomeRepresentationInterface> offsprings = new ArrayList<>(crossover.performCrossover(runEvolutionContext, ind, ind2));
                 Random rand = runEvolutionContext.getRandom();
 
-                Future<ChromosomeRepresentationInterface> mutation1 = null;
-                Future<ChromosomeRepresentationInterface> mutation2 = null;
-
                 // performs mutation on first offspring with specified in the parameter file probability
                 if (rand.nextFloat() <= Parameters.getMutationProbability()) {
-                    Mutation mutation = new Mutation(offsprings.get(0), runEvolutionContext);
-                    mutation1 = runEvolutionContext.getExecutorService().submit(mutation);
+                    offsprings.set(0, mutation.performMutation(runEvolutionContext, offsprings.get(0)));
                 }
 
                 // if we can add both offsprings to the current population
@@ -175,20 +171,9 @@ public class Population extends Thread {
 
                     // performs mutation on second offspring with specified in the parameter file probability
                     if (rand.nextFloat() <= Parameters.getMutationProbability()) {
-                        Mutation mutation = new Mutation(offsprings.get(1), runEvolutionContext);
-                        mutation2 = runEvolutionContext.getExecutorService().submit(mutation);
-                    }
-                    if (mutation1 != null) {
-                        offsprings.set(0, mutation1.get());
-                    }
-                    if (mutation2 != null) {
-                        offsprings.set(1, mutation2.get());
+                        offsprings.set(1, mutation.performMutation(runEvolutionContext, offsprings.get(1)));
                     }
                     chromosomes.add(offsprings.get(1));
-                } else {
-                    if (mutation1 != null) {
-                        offsprings.set(0, mutation1.get());
-                    }
                 }
 
                 // adds offsprings to the current population
@@ -211,15 +196,14 @@ public class Population extends Thread {
 
         @Override
         public void run() {
-            // performs mutation on the chromosome with specified in the
-            // parameter file probability
-            if (runEvolutionContext.getRandom().nextFloat() <= Parameters.getMutationProbability()) {
-                Mutation mutation = new Mutation(ind, runEvolutionContext);
-                try {
-                    ind = runEvolutionContext.getExecutorService().submit(mutation).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                // performs mutation on the chromosome with specified in the
+                // parameter file probability
+                if (runEvolutionContext.getRandom().nextFloat() <= Parameters.getMutationProbability()) {
+                    ind = mutation.performMutation(runEvolutionContext, ind);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             // adds chromosome to the current population
