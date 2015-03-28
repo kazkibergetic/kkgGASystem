@@ -7,13 +7,16 @@ import params.ClassInitialization;
 import params.Parameters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @author anthony
+ * ParetoRankEvaluator.
+ *
+ * @author Maxim
  */
 public class ParetoRankEvaluator implements RankEvaluator {
 
@@ -21,88 +24,78 @@ public class ParetoRankEvaluator implements RankEvaluator {
     ClassInitialization ci = new ClassInitialization();
     protected int populationSize = Parameters.getPopulationSize();
 
-    /**
-     * complete ranking of dual objectives
-     * <p/>
-     * #sample ranked data
-     * 2,1000 #Rank:1
-     * 4,600  #Rank:1
-     * 8,400  #Rank:1
-     * 7,800  #Rank:2
-     * 9,500  #Rank:2
-     */
-
-    @SuppressWarnings("unchecked")
     public List<Double> paretoCalculations() {
         List<Double> calculatedRanks = new ArrayList<>();
-        List<List<Double>> originalObjectives = parseObjectiveSets(new ArrayList<>(ranks));
-        int objectiveCount = originalObjectives.get(0).size();
-        List<List<Double>> objectiveSets = new ArrayList<>(originalObjectives);
+        if (!ranks.isEmpty()){
+            Map<Integer, List<Double>> originalObjectives = parseObjectiveSets(ranks);
+            List<Integer> excludedObjects = new ArrayList<>();
 
-        int rank = 1;
+            int objectCount = originalObjectives.keySet().size();
+            calculatedRanks.addAll(Collections.nCopies(populationSize, Double.POSITIVE_INFINITY));
 
-        //replace with a more efficient later
-        for (int i = 0; i < populationSize; i++) {
-            calculatedRanks.add(Double.POSITIVE_INFINITY); //fill with dump values to enable set in second loop
-        }
-
-        List<Double> emptyObjective = Collections.nCopies(objectiveCount, Double.POSITIVE_INFINITY);
-
-        while (Collections.frequency(objectiveSets, emptyObjective) != objectiveSets.size()) {
-            List<Integer> nonDominatedIndividualIndexes = findNonDominatedIndividualIndexes(objectiveSets);
-            for (Integer j : nonDominatedIndividualIndexes) {
-                calculatedRanks.set(j, (double) rank);
-                objectiveSets.set(j, emptyObjective);
+            int rank = 1;
+            while (excludedObjects.size() != objectCount) {
+                List<Integer> notDominatedIndexes = findNotDominatedObjectives(originalObjectives, excludedObjects);
+                for (int i : notDominatedIndexes) {
+                    calculatedRanks.set(i, (double) rank);
+                    excludedObjects.add(i);
+                }
+                ++rank;
             }
-            rank++; //increment ranking number e.g. rank 0, rank 1, e.t.c
+            ranks.clear();
         }
-        ranks.clear();
-        //System.out.println("#counting "+count);
-
         return calculatedRanks;
     }
 
-    protected List<Integer> findNonDominatedIndividualIndexes(List<List<Double>> objectiveSets) {
-        List<Integer> index = new ArrayList<>();
-        for (int i = 0; i < objectiveSets.size(); i++) {
-            List<Double> selectedObjectives = objectiveSets.get(i);
+    private List<Integer> findNotDominatedObjectives(Map<Integer, List<Double>> originalObjectives, List<Integer> excludedObjects) {
+        List<Integer> notDominatedIndexes = new ArrayList<>();
 
-            if (isNotDominatedByAnyIndividual(selectedObjectives, objectiveSets)) {
-                index.add(i);
+        for (int i : originalObjectives.keySet()) {
+            if (!excludedObjects.contains(i)) {
+                List<Double> candidate = originalObjectives.get(i);
+                boolean dominated = false;
+                for (int j : originalObjectives.keySet()) {
+                    if (i != j && !excludedObjects.contains(j)) {
+                        List<Double> objectToCompare = originalObjectives.get(j);
+                        if (isDominated(candidate, objectToCompare)) {
+                            dominated = true;
+                            break;
+                        }
+                    }
+                }
+                if (!dominated){
+                    notDominatedIndexes.add(i);
+                }
             }
         }
-        return index;
+        return notDominatedIndexes;
     }
 
-    protected boolean isNotDominatedByAnyIndividual(List<Double> selectedObjectives, List<List<Double>> objectiveSets) {
-        boolean notDominated = true;
-
-        int objectivesCount = objectiveSets.get(0).size();
-        for (List<Double> objectiveSet : objectiveSets) {
-            boolean notDominatedByOneIndividual = false;
-            boolean notAllEqual = false;
-            for (int j = 0; j < objectivesCount; j++) {
-                Double selectedObjective = selectedObjectives.get(j);
-                Double currentObjective = objectiveSet.get(j);
-
-                notAllEqual = notAllEqual || !(selectedObjective.equals(currentObjective));
-                notDominatedByOneIndividual = notDominatedByOneIndividual || (selectedObjective < currentObjective);
+    protected boolean isDominated(List<Double> candidate, List<Double> objectToCompare) {
+        boolean notDominated = false;
+        boolean equals = true;
+        for (int i = 0; i < candidate.size(); ++i) {
+            Double a = candidate.get(i);
+            Double b = objectToCompare.get(i);
+            if (a < b) {
+                notDominated = true;
             }
-            notDominated = notDominated && (notDominatedByOneIndividual || !notAllEqual);
+            equals = equals && a.equals(b);
         }
-        return notDominated;
+        return !equals && !notDominated;
     }
 
-    protected List<List<Double>> parseObjectiveSets(List<String> originalObjectiveSets) {
-        List<List<Double>> originalObjectives = new ArrayList<>();
-        for (String s : originalObjectiveSets) {
-            List<String> originalObjectiveList = Arrays.asList(s.split("\\s*,\\s*"));
+    protected Map<Integer, List<Double>> parseObjectiveSets(List<String> originalObjectiveSets) {
+        Map<Integer, List<Double>> originalObjectives = new HashMap<>();
+
+        for (int i = 0 ; i< originalObjectiveSets.size(); ++i) {
+            String[] numbers = originalObjectiveSets.get(i).split(",");
 
             List<Double> individualObjective = new ArrayList<>();
-            for (String str : originalObjectiveList) {
-                individualObjective.add(Double.parseDouble(str));
+            for (String number : numbers) {
+                individualObjective.add(Double.parseDouble(number));
             }
-            originalObjectives.add(individualObjective);
+            originalObjectives.put(i, individualObjective);
         }
         return originalObjectives;
     }
@@ -132,26 +125,17 @@ public class ParetoRankEvaluator implements RankEvaluator {
      */
     @Override
     public void postEvaluateFitness(List<ChromosomeRepresentationInterface> chromosomes) throws Exception {
-
         List<Double> rankResults;
         List<String> ranksCopy = new ArrayList<String>(ranks);
-        //chromosome.setChromosome(TSPproblem.getOptimalTour());
         if (ranks.size() == Parameters.getPopulationSize()) {
             rankResults = paretoCalculations();
         } else {
             throw new Exception("Number of ranks is not equal to number of populations.");
         }
 
-        for (int i = 0; i < chromosomes.size(); i++) {
-
-            int position = ranksCopy.indexOf(chromosomes.get(i).getMetaData());
-
-            //System.out.println(position + " >>> "+ i);
-            chromosomes.get(i).setFitness(rankResults.get(position));
-
-
+        for (ChromosomeRepresentationInterface chromosome : chromosomes) {
+            int position = ranksCopy.indexOf(chromosome.getMetaData());
+            chromosome.setFitness(rankResults.get(position));
         }
-
-
     }
 }
