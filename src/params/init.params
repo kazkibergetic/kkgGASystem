@@ -16,6 +16,8 @@ chromosome-representation			  = chromosome.IntegerBasedChromosome
 fitness-function                      = fitness.multiObjective.ParetoRankEvaluator
 selection-operator                    = operators.selection.TournamentSelection
 
+discretization-method                 = discretization.EqualWidthBinning
+
 tournament-size                       = 3
 
 problem								  = problems.RoughSets.bireduct.Problem
@@ -28,6 +30,9 @@ stat-out                              = output/reduct
 ;processors							  = 4
 
 ;seed                                 = 1
+
+bin-number                            = 3
+numeric-attributes                    =
 
 delimiter                             =","
 name-column                           =true
@@ -44,8 +49,7 @@ best-individual-out                   = 5
 
 
 
-
-
+;### numeric-attributes                    = 4,5-6
 
 ;### "runs" - number of experiments to perform
 ;### Example, runs = 5	

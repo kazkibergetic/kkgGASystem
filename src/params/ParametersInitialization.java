@@ -40,6 +40,8 @@ public class ParametersInitialization extends Parameters {
 			System.out
 					.println("==================================================");
 
+            new ParametersValidator().validateParameters();
+
 			if (ParametersInitialization.properties.getProperty(InputParametersNames.RUNS) == null) {
 				throw new ParametersInitializationException(
 						InputParametersNames.RUNS);
@@ -190,38 +192,39 @@ public class ParametersInitialization extends Parameters {
 
             DisplayInfo.displayInitialization(InputParametersNames.DELIMITER, String.valueOf(delimiter));
 
-            if (ParametersInitialization.properties
-                    .getProperty(InputParametersNames.NAME_COLUMN) == null) {
-                throw new ParametersInitializationException(
-                        InputParametersNames.NAME_COLUMN);
-            } else {
+            if (ParametersInitialization.properties.getProperty(InputParametersNames.NAME_COLUMN) != null) {
                 nameColumnExists = Boolean.parseBoolean(ParametersInitialization.properties.getProperty(
                         InputParametersNames.NAME_COLUMN).trim());
             }
 
             DisplayInfo.displayInitialization(InputParametersNames.NAME_COLUMN, String.valueOf(nameColumnExists));
 
-            if (ParametersInitialization.properties
-                    .getProperty(InputParametersNames.NAME_COLUMN_POSITION) == null) {
-                throw new ParametersInitializationException(
-                        InputParametersNames.NAME_COLUMN_POSITION);
-            } else {
+            if (ParametersInitialization.properties.getProperty(InputParametersNames.NAME_COLUMN_POSITION) != null) {
                 nameColumnPosition = Integer.parseInt(ParametersInitialization.properties.getProperty(
                         InputParametersNames.NAME_COLUMN_POSITION).trim());
             }
 
             DisplayInfo.displayInitialization(InputParametersNames.NAME_COLUMN_POSITION, String.valueOf(nameColumnPosition));
 
-            if (ParametersInitialization.properties
-                    .getProperty(InputParametersNames.DECISION_ATTRIBUTE_POSITION) == null) {
-                throw new ParametersInitializationException(
-                        InputParametersNames.DECISION_ATTRIBUTE_POSITION);
-            } else {
+            if (ParametersInitialization.properties.getProperty(InputParametersNames.DECISION_ATTRIBUTE_POSITION) != null) {
                 decisionColumnPosition = Integer.parseInt(ParametersInitialization.properties.getProperty(
                         InputParametersNames.DECISION_ATTRIBUTE_POSITION).trim());
             }
 
             DisplayInfo.displayInitialization(InputParametersNames.DECISION_ATTRIBUTE_POSITION, String.valueOf(decisionColumnPosition));
+
+            if (ParametersInitialization.properties.getProperty(InputParametersNames.BIN_NUMBER) != null) {
+                binNumber = Integer.parseInt(ParametersInitialization.properties.getProperty(
+                        InputParametersNames.BIN_NUMBER).trim());
+            }
+
+            DisplayInfo.displayInitialization(InputParametersNames.BIN_NUMBER, String.valueOf(binNumber));
+
+            if (ParametersInitialization.properties.getProperty(InputParametersNames.NUMERIC_ATTRIBUTES) != null) {
+                numericAttributes = new NumericAttributesParameterParser().getNumericAttributes(ParametersInitialization.properties.getProperty(InputParametersNames.NUMERIC_ATTRIBUTES));
+            }
+
+            DisplayInfo.displayInitialization(InputParametersNames.NUMERIC_ATTRIBUTES, String.valueOf(numericAttributes));
 
 			if (ParametersInitialization.properties
 					.getProperty(InputParametersNames.STATISTICS_OUTPUT) == null) {
@@ -273,6 +276,12 @@ public class ParametersInitialization extends Parameters {
 							InputParametersNames.CHROMOSOME_REPRESENTATION,
 							ParametersInitialization.properties
 									.getProperty(InputParametersNames.CHROMOSOME_REPRESENTATION));
+
+            DisplayInfo
+                    .displayInitialization(
+                            InputParametersNames.DISCRETIZATION_METHOD,
+                            ParametersInitialization.properties
+                                    .getProperty(InputParametersNames.DISCRETIZATION_METHOD));
 
 			/*
 			 * ==================================================================

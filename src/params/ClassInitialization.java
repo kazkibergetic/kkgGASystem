@@ -3,12 +3,13 @@
  */
 package params;
 
+import chromosome.ChromosomeRepresentationInterface;
+import discretization.DiscretizationMethod;
 import fitness.FitnessEvaluator;
 import operators.crossover.CrossoverInterface;
 import operators.mutation.MutationInterface;
 import operators.selection.SelectionInterface;
 import problems.ProblemInterface;
-import chromosome.ChromosomeRepresentationInterface;
 
 /**
  * @author or13uw
@@ -16,37 +17,6 @@ import chromosome.ChromosomeRepresentationInterface;
  */
 public class ClassInitialization extends ParametersInitialization{
 
-
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	public ClassInitialization()
-	{
-		
-	}
-	public ClassInitialization(String[] args) throws Exception {
-		super(args);
-		// TODO Auto-generated constructor stub
-	}
-
-	/*crossover_operator = this.getCrossoverOperator();
-
-	mutation_operator = this.getMutationOperator(this.properties
-			.getProperty(InputParametersNames.MUTATION_OPERATOR));
-
-	selection_operator = this.getSelectionOperator(this.properties
-			.getProperty(InputParametersNames.SELECTION_OPERATOR));
-
-	fitness_evaluation_operator = this
-			.getFitnessEvaluationOperator(this.properties
-					.getProperty(InputParametersNames.FITNESS_FUNCTION));
-	
-	
-	chromosome = this
-			.getChromosomeRepresentation(this.properties
-					.getProperty(InputParametersNames.CHROMOSOME_REPRESENTATION));
-	*/
 	public CrossoverInterface getCrossoverOperator() {
 		CrossoverInterface crossover = null;
 		String className = ParametersInitialization.properties
@@ -56,12 +26,7 @@ public class ClassInitialization extends ParametersInitialization{
 			Class<?> obj = Class.forName(className);
 			crossover = (CrossoverInterface) obj.newInstance();
 
-		} catch (IllegalAccessException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);
 			e.printStackTrace();
 		}
@@ -77,12 +42,7 @@ public class ClassInitialization extends ParametersInitialization{
 			Class<?> obj = Class.forName(className);
 			mutation = (MutationInterface) obj.newInstance();
 
-		} catch (IllegalAccessException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);
 			e.printStackTrace();
 		}
@@ -98,12 +58,7 @@ public class ClassInitialization extends ParametersInitialization{
 			Class<?> obj = Class.forName(className);
 			selection = (SelectionInterface) obj.newInstance();
 
-		} catch (IllegalAccessException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);
 			e.printStackTrace();
 		}
@@ -119,12 +74,7 @@ public class ClassInitialization extends ParametersInitialization{
 			Class<?> obj = Class.forName(className);
 			fitness = (FitnessEvaluator) obj.newInstance();
 
-		} catch (IllegalAccessException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);
 			e.printStackTrace();
 		}
@@ -142,12 +92,7 @@ public class ClassInitialization extends ParametersInitialization{
 			Class<?> obj = Class.forName(className);
 			chromosome = (ChromosomeRepresentationInterface) obj.newInstance();
 
-		} catch (IllegalAccessException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);
 			e.printStackTrace();
 		}
@@ -165,16 +110,28 @@ public class ClassInitialization extends ParametersInitialization{
 			Class<?> obj = Class.forName(className);
 			problem = (ProblemInterface) obj.newInstance();
 
-		} catch (IllegalAccessException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(this.getClass().getName() + ". exception: " + e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			System.err.println(this.getClass().getName() + ". exception: " + e);
 			e.printStackTrace();
 		}
 		return problem;
 	}
-	
+
+    public <T> DiscretizationMethod<T> getDiscretizationMethod() {
+        DiscretizationMethod<T> discretizationMethod = null;
+
+        String className = ParametersInitialization.properties.getProperty(InputParametersNames.DISCRETIZATION_METHOD).trim();
+
+        try {
+
+            Class<?> obj = Class.forName(className);
+            discretizationMethod = (DiscretizationMethod<T>) obj.getConstructor(int.class).newInstance(Parameters.getBinNumber());
+
+        } catch (Exception e) {
+            System.err.println(this.getClass().getName() + ". exception: " + e);
+            e.printStackTrace();
+        }
+        return discretizationMethod;
+    }
+
 }

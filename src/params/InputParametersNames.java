@@ -20,7 +20,8 @@ public class InputParametersNames {
 	public static final String MUTATION_OPERATOR= "mutation-operator";
 	
 	public static final String FITNESS_FUNCTION = "fitness-function";
-	
+
+	public static final String DISCRETIZATION_METHOD = "discretization-method";
 	
 	public static final String SELECTION_OPERATOR = "selection-operator";
 	
@@ -39,6 +40,10 @@ public class InputParametersNames {
 	public static final String PROCESSORS = "processors";
 
 	public static final String SEED = "seed";
+
+	public static final String BIN_NUMBER = "bin-number";
+
+	public static final String NUMERIC_ATTRIBUTES = "numeric-attributes";
 
 	public static final String DELIMITER = "delimiter";
 

@@ -1,10 +1,12 @@
 package params;
 
 import chromosome.ChromosomeRepresentationInterface;
+import fitness.FitnessEvaluator;
 import operators.crossover.CrossoverInterface;
 import operators.mutation.MutationInterface;
 import operators.selection.SelectionInterface;
-import fitness.FitnessEvaluator;
+
+import java.util.List;
 
 /**
  * @author or13uw
@@ -25,6 +27,8 @@ public class Parameters {
 	protected static boolean nameColumnExists;
 	protected static int nameColumnPosition;
 	protected static int decisionColumnPosition;
+	protected static int binNumber;
+	protected static List<Integer> numericAttributes;
 
 
 	protected static CrossoverInterface crossover_operator;
@@ -154,5 +158,13 @@ public class Parameters {
 
     public static int getDecisionColumnPosition() {
         return decisionColumnPosition;
+    }
+
+    public static int getBinNumber() {
+        return binNumber;
+    }
+
+    public static List<Integer> getNumericAttributes() {
+        return numericAttributes;
     }
 }

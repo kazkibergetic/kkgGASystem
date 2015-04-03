@@ -67,17 +67,7 @@ public class Points implements Comparable {
 	@Override
 	public int compareTo(Object obj) {
 		Points p = (Points) obj;
-
-		int returnValue = 0;
-		if(p.id > this.id)
-			returnValue =  -1;
-		if(p.id == this.id)
-			returnValue = 0 ;
-		if(p.id < this.id)
-			returnValue = 1;
-		
-		return returnValue;
-		
+        return Integer.compare(p.id, this.id);
 	}
 	
 	

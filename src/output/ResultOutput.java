@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -71,6 +72,25 @@ public class ResultOutput {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+            Map<Integer, List<List<String>>> discretizationResults = problemResultCache.getDiscretizationResults(chromosome);
+            for (Integer attr : discretizationResults.keySet()) {
+                List<List<String>> columns = discretizationResults.get(attr);
+                String discretizeName = "chromosome" + (i + 1) + "[attr="+attr + "].discretize";
+                try (PrintWriter chromosomeResultWriter = new PrintWriter(new FileOutputStream(dir + discretizeName))) {
+                    StringBuilder output = new StringBuilder();
+                    int rows = columns.get(0).size();
+                    for(int j = 0 ; j < rows; ++j) {
+                        for (List<String> column : columns) {
+                            output.append(column.get(j)).append("\t");
+                        }
+                        output.append("\n");
+                    }
+                    chromosomeResultWriter.println(output.toString());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            problemResultCache.removeResults(chromosome);
         }
     }
 
