@@ -40,19 +40,38 @@ public class IndexRegistryTest {
     }
 
     @Test
-    public void testDirectMappings() {
-        registry.registerMapping(0, 1);
-        registry.registerMapping(0, 2);
-        registry.registerOneDirectMapping(3, 0);
+    public void testMoveIndexesByValue() {
+        registry.moveIndexesByValue(2, 4, 1);
 
-        assertEquals(2, registry.getOriginalIndex(0));
-        assertEquals(0, registry.getOriginalIndex(1));
+        assertEquals(0, registry.getOriginalIndex(0));
+        assertEquals(1, registry.getOriginalIndex(1));
+        assertEquals(2, registry.getOriginalIndex(2));
+        assertEquals(2, registry.getOriginalIndex(3));
+        assertEquals(3, registry.getOriginalIndex(4));
+
+        assertEquals(0, registry.getCurrentIndex(0));
+        assertEquals(1, registry.getCurrentIndex(1));
+        assertEquals(3, registry.getCurrentIndex(2));
+        assertEquals(4, registry.getCurrentIndex(3));
+    }
+
+    @Test
+    public void testMoveIndexesByValueTwice() {
+        registry.moveIndexesByValue(2, 4, 2);
+        registry.moveIndexesByValue(1, 6, 1);
+
+        assertEquals(0, registry.getOriginalIndex(0));
+        assertEquals(1, registry.getOriginalIndex(1));
         assertEquals(1, registry.getOriginalIndex(2));
         assertEquals(2, registry.getOriginalIndex(3));
-        assertEquals(1, registry.getCurrentIndex(0));
+        assertEquals(2, registry.getOriginalIndex(4));
+        assertEquals(2, registry.getOriginalIndex(5));
+        assertEquals(3, registry.getOriginalIndex(6));
+
+        assertEquals(0, registry.getCurrentIndex(0));
         assertEquals(2, registry.getCurrentIndex(1));
-        assertEquals(0, registry.getCurrentIndex(2));
-        assertEquals(3, registry.getCurrentIndex(3));
+        assertEquals(4, registry.getCurrentIndex(2));
+        assertEquals(6, registry.getCurrentIndex(3));
     }
 
     @Test

@@ -124,17 +124,18 @@ public class Problem implements ProblemInterface {
             List<String> column = tableByColumns.get(actualIndex);
             List<List<String>> newColumns = discretizationMethod.discretize(column);
             discretizationByOriginalColumn.put(numericAttribute, newColumns);
-            int columnsNumber = newColumns.size();
-            for (int j = actualIndex + 1; j < tableByColumns.size(); ++j) {
-                indexRegistry.registerMapping(j, j + columnsNumber - 1);
-            }
-            for (int i = 0; i < columnsNumber; ++i) {
-                if (i == 0){
-                    tableByColumns.set(actualIndex, newColumns.get(i));
-                } else {
-                    tableByColumns.add(actualIndex, newColumns.get(i));
-                    indexRegistry.registerOneDirectMapping(actualIndex + i, actualIndex);
-                }
+            insertNewColumns(indexRegistry, tableByColumns, actualIndex, newColumns);
+        }
+    }
+
+    private void insertNewColumns(IndexRegistry indexRegistry, List<List<String>> tableByColumns, int actualIndex, List<List<String>> newColumns) {
+        int columnsNumber = newColumns.size();
+        indexRegistry.moveIndexesByValue(actualIndex, tableByColumns.size(), columnsNumber - 1);
+        for (int i = 0; i < columnsNumber; ++i) {
+            if (i == 0){
+                tableByColumns.set(actualIndex, newColumns.get(i));
+            } else {
+                tableByColumns.add(actualIndex, newColumns.get(i));
             }
         }
     }
