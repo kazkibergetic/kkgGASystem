@@ -1,5 +1,7 @@
 package discretization;
 
+import evolver.RunEvolutionContext;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +24,7 @@ public class EqualFrequencyBinning implements DiscretizationMethod<String> {
      * @return list of new non-numeric columns
      */
     @Override
-    public List<List<String>> discretize(List<String> originalData) {
+    public List<List<String>> discretize(RunEvolutionContext runEvolutionContext, int attributeIndex, List<String> originalData) {
         List<List<String>> result = new ArrayList<>(binNumber);
         if (!originalData.isEmpty()) {
             int actualBinNumber = binNumber;
@@ -40,6 +42,8 @@ public class EqualFrequencyBinning implements DiscretizationMethod<String> {
             }
             Collections.sort(values);
 
+            StringBuilder intervalsInfo = new StringBuilder();
+
             for(int j = 1; j <= actualBinNumber; ++j){
                 List<String> column = new ArrayList<>(Collections.nCopies(originalData.size(), ""));
                 result.add(column);
@@ -54,7 +58,17 @@ public class EqualFrequencyBinning implements DiscretizationMethod<String> {
                     int originalIndex = item.getOriginalIndex();
                     column.set(originalIndex, inside? "1": "0");
                 }
+
+                intervalsInfo.append(j)
+                        .append(j == 1 ? " (" : " [")
+                        .append(j == 1 ? "-inf" : values.get(leftRange).getValue())
+                        .append(" , ")
+                        .append(j == binNumber ? "+inf" : values.get(rightRange - 1).getValue())
+                        .append(j == binNumber ? ") " : "] ")
+                        .append("\n");
             }
+
+            runEvolutionContext.getProblemResultCache().putDiscretizationIntervals(attributeIndex, intervalsInfo.toString());
         }
         return result;
     }

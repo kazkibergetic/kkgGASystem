@@ -88,7 +88,8 @@ public class Problem implements ProblemInterface {
         return optimalTour;
     }
 
-    public void initialize(File file) {
+    @Override
+    public void initialize(RunEvolutionContext runEvolutionContext, File file) {
         File input = file;
 
         try {

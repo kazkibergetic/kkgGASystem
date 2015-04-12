@@ -58,6 +58,7 @@ public class Start {
         runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
         runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
         runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
+        runEvolutionContext.setProblemResultCache(new ProblemResultCache());
 
         try {
             // the program will read all files in the provided input folder with
@@ -73,15 +74,13 @@ public class Start {
                         DisplayInfo.displayStartReadingFile(file.getName());
 
                         // initialize the problem, read dataset from the provided file
-                        problem.initialize(file);
+                        problem.initialize(runEvolutionContext, file);
 
                         Graph fitnessVsGenerations = null;
                         RunEvolution r = null;
 
                         // perform number of experiments, specified in param file
                         for (int z = 0; z < Parameters.getNumberOfRuns(); z++) {
-                            runEvolutionContext.setProblemResultCache(new ProblemResultCache());
-
                             FitnessResults fitnessOutput = new FitnessResults(file.getName(), z, fitnessVsGenerations);
                             runEvolutionContext.setFitnessOutput(fitnessOutput);
 
@@ -93,6 +92,8 @@ public class Start {
                             resultOutput.finish();
                             fitnessOutput.finish();
                         }
+
+                        runEvolutionContext.getProblemResultCache().removeDiscretizationIntervals();
 
                         try {
                             // display graph

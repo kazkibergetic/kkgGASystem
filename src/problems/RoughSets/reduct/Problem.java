@@ -46,7 +46,8 @@ public class Problem implements ProblemInterface {
      */
     private static int numRows;
 
-    public void initialize(File file) {
+    @Override
+    public void initialize(RunEvolutionContext runEvolutionContext,  File file) {
         // TODO Auto-generated method stub
         numRows = 0;
         numColumns = 0;

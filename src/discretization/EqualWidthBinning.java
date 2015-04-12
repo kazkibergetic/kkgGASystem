@@ -1,5 +1,7 @@
 package discretization;
 
+import evolver.RunEvolutionContext;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +25,7 @@ public class EqualWidthBinning implements DiscretizationMethod<String> {
      * @return list of new non-numeric columns
      */
     @Override
-    public List<List<String>> discretize(List<String> originalData) {
+    public List<List<String>> discretize(RunEvolutionContext runEvolutionContext, int attributeIndex, List<String> originalData) {
         List<List<String>> result = new ArrayList<>(binNumber);
         if (!originalData.isEmpty()) {
             List<Double> values = new ArrayList<>(originalData.size());
@@ -34,19 +36,32 @@ public class EqualWidthBinning implements DiscretizationMethod<String> {
             Double min = Collections.min(values);
             double width = (max - min) / binNumber;
 
+            StringBuilder intervalsInfo = new StringBuilder();
+
             for(int i = 1; i <= binNumber; ++i){
                 List<String> column = new ArrayList<>(originalData.size());
                 result.add(column);
+                double leftRange = min + width * (i - 1);
+                double rightRange = min + width * i;
+
                 for (Double value : values) {
-                    double leftRange = min + width * (i - 1);
-                    double rightRange = min + width * i;
                     boolean inside = leftRange <= value && value < rightRange;
                     if (!inside && i == binNumber && leftRange < value && value <= rightRange){
                         inside = true;
                     }
                     column.add(inside? "1": "0");
                 }
+
+                intervalsInfo.append(i)
+                        .append(i == 1? " (": " [")
+                        .append(i == 1? "-inf": leftRange)
+                        .append(" , ")
+                        .append(i == binNumber? "+inf": rightRange)
+                        .append(")")
+                        .append("\n");
             }
+
+            runEvolutionContext.getProblemResultCache().putDiscretizationIntervals(attributeIndex, intervalsInfo.toString());
         }
         return result;
     }

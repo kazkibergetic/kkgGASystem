@@ -53,7 +53,8 @@ public class Problem implements ProblemInterface {
 
     private static DiscretizationMethod<String> discretizationMethod;
 
-    public void initialize(File file) {
+    @Override
+    public void initialize(RunEvolutionContext runEvolutionContext, File file) {
         numRows = 0;
         numColumns = 0;
         numConditionalAttributes = 0;
@@ -64,7 +65,7 @@ public class Problem implements ProblemInterface {
         discretizationByOriginalColumn = new HashMap<>();
         discretizationMethod = new ClassInitialization().getDiscretizationMethod();
         try {
-            readDataSet(file);
+            readDataSet(runEvolutionContext, file);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +77,7 @@ public class Problem implements ProblemInterface {
      *
      * @param file : file to read dataset from
      */
-    private void readDataSet(File file) throws IOException {
+    private void readDataSet(RunEvolutionContext runEvolutionContext, File file) throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()), Charsets.UTF_8);
         String delimiter = Parameters.getDelimiter();
         for (String line : lines) {
@@ -99,7 +100,7 @@ public class Problem implements ProblemInterface {
         int decisionColumnPosition = Parameters.getDecisionColumnPosition();
         reorderNameNadDecisionAttributes(indexRegistry, tableByColumns, nameColumnExists, nameColumnPosition, decisionColumnPosition);
         List<Integer> numericAttributes = Parameters.getNumericAttributes();
-        discretizeNumericAttributes(indexRegistry, tableByColumns, numericAttributes);
+        discretizeNumericAttributes(runEvolutionContext, indexRegistry, tableByColumns, numericAttributes);
 
         numRows = tableByColumns.get(0).size();
         numColumns = tableByColumns.size();
@@ -118,11 +119,11 @@ public class Problem implements ProblemInterface {
         createPoints(numConditionalAttributes + numRows);
     }
 
-    private void discretizeNumericAttributes(IndexRegistry indexRegistry, List<List<String>> tableByColumns, List<Integer> numericAttributes) {
+    private void discretizeNumericAttributes(RunEvolutionContext runEvolutionContext, IndexRegistry indexRegistry, List<List<String>> tableByColumns, List<Integer> numericAttributes) {
         for (Integer numericAttribute : numericAttributes) {
             int actualIndex = indexRegistry.getCurrentIndex(numericAttribute);
             List<String> column = tableByColumns.get(actualIndex);
-            List<List<String>> newColumns = discretizationMethod.discretize(column);
+            List<List<String>> newColumns = discretizationMethod.discretize(runEvolutionContext, numericAttribute, column);
             discretizationByOriginalColumn.put(numericAttribute, newColumns);
             insertNewColumns(indexRegistry, tableByColumns, actualIndex, newColumns);
         }

@@ -22,7 +22,7 @@ public interface ProblemInterface  {
 	 /**
      * initialize the problem, read dataset
      */	
-	public void initialize(File file);
+	public void initialize(RunEvolutionContext runEvolutionContext, File file);
 	
 	 /**
      * returns number of points to create chromosome in GA

@@ -74,10 +74,12 @@ public class ResultOutput {
             }
             Map<Integer, List<List<String>>> discretizationResults = problemResultCache.getDiscretizationResults(chromosome);
             for (Integer attr : discretizationResults.keySet()) {
+                String discretizationIntervals = problemResultCache.getDiscretizationIntervals(attr);
                 List<List<String>> columns = discretizationResults.get(attr);
                 String discretizeName = "chromosome" + (i + 1) + "[attr="+attr + "].discretize";
                 try (PrintWriter chromosomeResultWriter = new PrintWriter(new FileOutputStream(dir + discretizeName))) {
                     StringBuilder output = new StringBuilder();
+                    output.append(discretizationIntervals).append("\n");
                     int rows = columns.get(0).size();
                     for(int j = 0 ; j < rows; ++j) {
                         for (List<String> column : columns) {
