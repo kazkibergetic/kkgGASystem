@@ -82,13 +82,15 @@ public class Problem implements ProblemInterface {
         String delimiter = Parameters.getDelimiter();
         for (String line : lines) {
             line = line.trim();
-            String[] items = line.split(delimiter);
-            tableByRows.add(numRows++, new ArrayList<>(Arrays.asList(items)));
+            if (line.length() > 0) {
+                String[] items = line.split(delimiter);
+                tableByRows.add(numRows++, new ArrayList<>(Arrays.asList(items)));
+            }
         }
 
         int columns = tableByRows.get(0).size();
         for (int i = 0; i < columns; ++i) {
-            List<String> column = new ArrayList<>();
+            List<String> column = new ArrayList<>(numRows);
             for (int j = 0; j < numRows; ++j) {
                 column.add(tableByRows.get(j).get(i));
             }
