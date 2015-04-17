@@ -49,7 +49,9 @@ public class FitnessResults implements StatisticsInterface {
     public void writeStatistics(int generation, Population current, RunEvolutionContext runEvolutionContext) {
         if (!runEvolutionContext.isRankOption()) {
             writer.println(generation + " " + current.getAverageFitness() + " " + current.getBestFitness());
-            statGraph.addValues(generation, current.getAverageFitness(), current.getBestFitness());
+            if (statGraph != null) {
+                statGraph.addValues(generation, current.getAverageFitness(), current.getBestFitness());
+            }
         } else {
 
             Map<Double, Integer> ranks = new TreeMap<>();

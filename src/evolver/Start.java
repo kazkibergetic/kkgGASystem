@@ -16,6 +16,7 @@
 
 package evolver;
 
+import com.google.common.io.Files;
 import fitness.FitnessEvaluator;
 import fitness.multiObjective.ParetoRankEvaluator;
 import output.DisplayInfo;
@@ -28,7 +29,6 @@ import params.ParametersInitialization;
 import problems.ProblemInterface;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.Executors;
 
@@ -43,35 +43,40 @@ import java.util.concurrent.Executors;
 public class Start {
 
     public static void main(String[] args) throws Exception {
-
         // display copyright information
         DisplayInfo.displayCopyrights();
 
         // read parameters from params/init.param file
-        new ParametersInitialization(args);
+        ParametersInitialization.loadDefaultParameters();
 
-        // initialize interfaces
-        ClassInitialization ci = new ClassInitialization();
-        ProblemInterface problem = ci.getProblem();
-        FitnessEvaluator fitnessEvaluationOperator = ci.getFitnessEvaluationOperator();
-        RunEvolutionContext runEvolutionContext = new RunEvolutionContext();
-        runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
-        runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
-        runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
-        runEvolutionContext.setProblemResultCache(new ProblemResultCache());
+        // the program will read all files in the provided input folder with
+        // specified in param file extension
+        File folder = new File(Parameters.getInputFolder());
+        File[] listOfFiles = folder.listFiles();
 
-        try {
-            // the program will read all files in the provided input folder with
-            // specified in param file extension
-            File folder = new File(Parameters.getInputFolder());
-            File[] listOfFiles = folder.listFiles();
-
-            if (listOfFiles != null) {
-                for (File file : listOfFiles) {
-                    if (file.isFile() && file.getName().endsWith(Parameters.getFilesExtension())) {
-
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                if (file.isFile() && file.getName().endsWith(Parameters.getFilesExtension())) {
+                    RunEvolutionContext runEvolutionContext = null;
+                    try {
                         // display information about the current file
                         DisplayInfo.displayStartReadingFile(file.getName());
+
+                        ParametersInitialization.loadDefaultParameters();
+                        String dataFileName = Files.getNameWithoutExtension(file.getName());
+                        File customParameters = new File(file.getParent() + File.separator + dataFileName + ParametersInitialization.PARAMS_EXTENSION);
+                        if (customParameters.exists()) {
+                            ParametersInitialization.loadParameters(customParameters.getAbsolutePath());
+                        }
+
+                        ClassInitialization ci = new ClassInitialization();
+                        ProblemInterface problem = ci.getProblem();
+                        FitnessEvaluator fitnessEvaluationOperator = ci.getFitnessEvaluationOperator();
+                        runEvolutionContext = new RunEvolutionContext();
+                        runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
+                        runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
+                        runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
+                        runEvolutionContext.setProblemResultCache(new ProblemResultCache());
 
                         // initialize the problem, read dataset from the provided file
                         problem.initialize(runEvolutionContext, file);
@@ -95,25 +100,28 @@ public class Start {
 
                         runEvolutionContext.getProblemResultCache().removeDiscretizationIntervals();
 
-                        try {
-                            // display graph
-                            if (!runEvolutionContext.isRankOption()){
+
+                        // display graph
+                        if (!runEvolutionContext.isRankOption()) {
+                            if (fitnessVsGenerations != null) {
                                 fitnessVsGenerations.start(Parameters.getOutputFolder() + "/" + file.getName() + "/");
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
 
                         DisplayInfo.displayRunStatistics(r);
                         DisplayInfo.displayEndReadingFile(file.getName());
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (runEvolutionContext != null) {
+                            runEvolutionContext.getExecutorService().shutdown();
+                        }
                     }
                 }
-            } else {
-                throw new IllegalArgumentException("No input files found");
             }
-        } finally {
-            runEvolutionContext.getExecutorService().shutdown();
+        } else {
+            throw new IllegalArgumentException("No input files found");
         }
     }
+
 }
