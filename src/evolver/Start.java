@@ -19,6 +19,7 @@ package evolver;
 import com.google.common.io.Files;
 import fitness.FitnessEvaluator;
 import fitness.multiObjective.ParetoRankEvaluator;
+import fitness.multiObjective.RankEvaluator;
 import output.DisplayInfo;
 import output.Graph;
 import output.ResultOutput;
@@ -73,7 +74,7 @@ public class Start {
                         ProblemInterface problem = ci.getProblem();
                         FitnessEvaluator fitnessEvaluationOperator = ci.getFitnessEvaluationOperator();
                         runEvolutionContext = new RunEvolutionContext();
-                        runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof ParetoRankEvaluator);
+                        runEvolutionContext.setRankOption(fitnessEvaluationOperator instanceof RankEvaluator);
                         runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
                         runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
                         runEvolutionContext.setProblemResultCache(new ProblemResultCache());
