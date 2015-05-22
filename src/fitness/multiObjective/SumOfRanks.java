@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fitness.multiObjective;
 
 
@@ -12,6 +8,7 @@ import params.Parameters;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,9 +20,9 @@ public class SumOfRanks implements RankEvaluator {
     private ClassInitialization ci = new ClassInitialization();
 
     @Override
-    public double evaluateFitness(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface chromosome) throws Exception{
+    public double evaluateFitness(RunEvolutionContext runEvolutionContext, ChromosomeRepresentationInterface chromosome) throws Exception {
         String result = ci.getProblem().evaluateFitness(runEvolutionContext, chromosome);
-        if (result.split(",").length > 1) {
+        if (result.split("[,]").length > 1) {
             ranks.add(result);
             chromosome.setMetaData(result);
         } else {
@@ -35,54 +32,49 @@ public class SumOfRanks implements RankEvaluator {
         return Double.POSITIVE_INFINITY;
     }
 
-
-/**
- * @param ranks
- * @param popSize #SORTED
- *                ranks  obj1 obj2 normalized sum-of-ranks
- *                2,1000 1 5 1.2
- *                4,600  2 3 1.0
- *                7,800  3 4 1.4
- *                8,400  4 1 1.0
- *                9,500  5 2 1.4
- */
-    @SuppressWarnings("unchecked")
-	public ArrayList<Double> sorCalculations(ArrayList<String> ranks)
-    {
-        ArrayList<Double> r1 = new ArrayList<>();
-        ArrayList<Double> selectionRank = new ArrayList<>();
-        ArrayList<String> rankCopy = (ArrayList<String>) ranks.clone();
-
-        Collections.sort(ranks);
-        //System.out.println("#SORTED");
-
-         for(int j=0; j<ranks.size();j++)
-         {
-             String[] sp = ranks.get(j).split(","); // ranks.add("2,1000")
-             r1.add(Double.parseDouble(sp[1]));
-
-             //pad with dummy values to enable set of content in later code
-             //remove if problems are reported
-             selectionRank.add(1.00);
-         }
-         //sort both values
-         Collections.sort(r1);
-
-         for(int j=1; j<=ranks.size();j++)
-         {
-             String[] sp = ranks.get(j-1).split(","); // ranks.add("2,1000")
-
-             //selectionRank.add(j-1,((j+( GenerateMask.returnIndexD(r1,Double.parseDouble(sp[1])+"") +1))/(double)ranks.size()));
-
-             //set appropriate index with sum of rank value
-             selectionRank.set(GenerateMask.returnIndexS(rankCopy,ranks.get(j-1)),((j+( GenerateMask.returnIndexD(r1,Double.parseDouble(sp[1])+"") +1))/(double)ranks.size()));
-             //System.out.println(ranks.get(j-1) +":"+ GenerateMask.returnIndexS(rankCopy,ranks.get(j-1))+" " + j + " "+ ( GenerateMask.returnIndexD(r1,Double.parseDouble(sp[1])+"") +1) + " " + selectionRank.get(j-1));
-             //System.out.println(selectionRank.get(GenerateMask.returnIndexS(rankCopy,ranks.get(j-1))) +":"+ ranks.get(j-1) +" "+ rankCopy.get(j-1));
-
-         }
-
-         return selectionRank;
-
+    public List<Double> sorCalculations(List<String> ranks) {
+        List<DoublePair> inputValues = new ArrayList<>();
+        for (int j = 0; j < ranks.size(); ++j) {
+            String[] values = ranks.get(j).split("[,]");
+            inputValues.add(new DoublePair(Double.parseDouble(values[0]), Double.parseDouble(values[1]), j));
+        }
+        Collections.sort(inputValues, DoublePair.orderByLeft);
+        double lastValue = Double.NaN;
+        int currentRank = 0;
+        for (DoublePair value : inputValues) {
+            if (value.left == lastValue) {
+                value.rank1 = currentRank;
+            } else {
+                ++currentRank;
+                value.rank1 = currentRank;
+                lastValue = value.left;
+            }
+        }
+        Collections.sort(inputValues, DoublePair.orderByRight);
+        lastValue = Double.NaN;
+        currentRank = 0;
+        for (DoublePair value : inputValues) {
+            if (value.right == lastValue) {
+                value.rank2 = currentRank;
+            } else {
+                ++currentRank;
+                value.rank2 = currentRank;
+                lastValue = value.right;
+            }
+        }
+        double sumOfRanks1 = 0;
+        double sumOfRanks2 = 0;
+        for (DoublePair value : inputValues) {
+            sumOfRanks1 += value.rank1;
+            sumOfRanks2 += value.rank2;
+        }
+        Collections.sort(inputValues, DoublePair.orderByInitialPosition);
+        List<Double> resultRanks = new ArrayList<>();
+        for (DoublePair value : inputValues) {
+            double finalRank = value.rank1 / sumOfRanks1 + value.rank2 / sumOfRanks2;
+            resultRanks.add(finalRank);
+        }
+        return resultRanks;
     }
 
     @Override
@@ -90,7 +82,7 @@ public class SumOfRanks implements RankEvaluator {
     }
 
     @Override
-    public void postEvaluateFitness(List<ChromosomeRepresentationInterface> chromosomes) throws Exception{
+    public void postEvaluateFitness(List<ChromosomeRepresentationInterface> chromosomes) throws Exception {
         List<Double> rankResults;
         ArrayList<String> ranksCopy = new ArrayList<String>(ranks);
         if (ranks.size() == Parameters.getPopulationSize()) {
@@ -106,4 +98,49 @@ public class SumOfRanks implements RankEvaluator {
         }
     }
 
+    private static class DoublePair {
+        double left;
+        double right;
+        int initialRankPosition;
+        int rank1;
+        int rank2;
+
+        public DoublePair(double left, double right, int initialRankPosition) {
+            this.left = left;
+            this.right = right;
+            this.initialRankPosition = initialRankPosition;
+        }
+
+        private static final Comparator<DoublePair> orderByLeft = new Comparator<DoublePair>() {
+            @Override
+            public int compare(DoublePair o1, DoublePair o2) {
+                return Double.compare(o1.left, o2.left);
+            }
+        };
+
+        private static final Comparator<DoublePair> orderByRight = new Comparator<DoublePair>() {
+            @Override
+            public int compare(DoublePair o1, DoublePair o2) {
+                return Double.compare(o1.right, o2.right);
+            }
+        };
+
+        private static final Comparator<DoublePair> orderByInitialPosition = new Comparator<DoublePair>() {
+            @Override
+            public int compare(DoublePair o1, DoublePair o2) {
+                return Integer.compare(o1.initialRankPosition, o2.initialRankPosition);
+            }
+        };
+
+        @Override
+        public String toString() {
+            return "DoublePair{" +
+                    "left=" + left +
+                    ", right=" + right +
+                    ", initialRankPosition=" + initialRankPosition +
+                    ", rank1=" + rank1 +
+                    ", rank2=" + rank2 +
+                    '}';
+        }
+    }
 }
