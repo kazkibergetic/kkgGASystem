@@ -43,6 +43,7 @@ elitism-size                          = 5
 
 best-individual-out                   = 5
 
+missing-attribute-symbol              = ?
 
 
 

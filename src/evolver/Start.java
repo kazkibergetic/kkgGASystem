@@ -18,7 +18,6 @@ package evolver;
 
 import com.google.common.io.Files;
 import fitness.FitnessEvaluator;
-import fitness.multiObjective.ParetoRankEvaluator;
 import fitness.multiObjective.RankEvaluator;
 import output.DisplayInfo;
 import output.Graph;
@@ -78,6 +77,8 @@ public class Start {
                         runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
                         runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
                         runEvolutionContext.setProblemResultCache(new ProblemResultCache());
+                        runEvolutionContext.setMainOutputDir(String.format("%s/%s/main/", Parameters.getOutputFolder(), file.getName()));
+                        runEvolutionContext.setExtraOutputDir(String.format("%s/%s/extra/", Parameters.getOutputFolder(), file.getName()));
 
                         // initialize the problem, read dataset from the provided file
                         problem.initialize(runEvolutionContext, file);
@@ -87,14 +88,14 @@ public class Start {
 
                         // perform number of experiments, specified in param file
                         for (int z = 0; z < Parameters.getNumberOfRuns(); z++) {
-                            FitnessResults fitnessOutput = new FitnessResults(file.getName(), z, fitnessVsGenerations);
+                            FitnessResults fitnessOutput = new FitnessResults(runEvolutionContext, z, fitnessVsGenerations);
                             runEvolutionContext.setFitnessOutput(fitnessOutput);
 
                             // display information about the current run
                             DisplayInfo.displayRun(z);
 
                             r = new RunEvolution(z, runEvolutionContext);
-                            ResultOutput resultOutput = new ResultOutput(file.getName(), z, r, runEvolutionContext);
+                            ResultOutput resultOutput = new ResultOutput(z, r, runEvolutionContext);
                             resultOutput.finish();
                             fitnessOutput.finish();
                         }

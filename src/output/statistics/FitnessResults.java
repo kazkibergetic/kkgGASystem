@@ -7,7 +7,7 @@ import chromosome.ChromosomeRepresentationInterface;
 import evolver.Population;
 import evolver.RunEvolutionContext;
 import output.Graph;
-import params.Parameters;
+import output.OutputUtils;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -17,25 +17,15 @@ import java.util.TreeMap;
 /**
  * @author or13uw
  */
-
-
 public class FitnessResults implements StatisticsInterface {
 
     PrintWriter writer = null;
     Graph statGraph = null;
 
-    public FitnessResults(String currentProblemFileName, int run, Graph g) {
+    public FitnessResults(RunEvolutionContext runEvolutionContext, int run, Graph g) {
         statGraph = g;
-        String mresultFile;
-
-        mresultFile = Parameters.getOutputFolder() + "/" + currentProblemFileName + "/" + "run" + (run + 1) + "/" + "run" + (run + 1) + ".stat";
-
-
-        File targetFile = new File(mresultFile);
-        File parent = targetFile.getParentFile();
-        if (!parent.exists() && !parent.mkdirs()) {
-            throw new IllegalStateException("Couldn't create dir: " + parent);
-        }
+        String mresultFile = runEvolutionContext.getMainOutputDir() + "run" + (run + 1) + "/" + "run" + (run + 1) + ".stat";
+        OutputUtils.mkdirsForPath(mresultFile);
 
         try {
             writer = new PrintWriter(mresultFile, "UTF-8");

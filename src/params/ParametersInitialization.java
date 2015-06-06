@@ -173,6 +173,10 @@ public class ParametersInitialization extends Parameters {
         best_individuals_out = Integer.parseInt(ParametersInitialization.properties.getProperty(InputParametersNames.BEST_INDIVIDUAL_OUT, "1").trim());
 
         DisplayInfo.displayInitialization(InputParametersNames.BEST_INDIVIDUAL_OUT, String.valueOf(best_individuals_out));
+
+        if (ParametersInitialization.properties.getProperty(InputParametersNames.MISSING_ATTRIBUTE_SYMBOL) != null) {
+            missingAttributeSymbol = ParametersInitialization.properties.getProperty(InputParametersNames.MISSING_ATTRIBUTE_SYMBOL);
+        }
             /*
              * ==================================================================
 			 * ================================

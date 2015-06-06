@@ -29,6 +29,7 @@ public class Parameters {
 	protected static int decisionColumnPosition;
 	protected static int binNumber;
 	protected static List<Integer> numericAttributes;
+	protected static String missingAttributeSymbol;
 
 
 	protected static CrossoverInterface crossover_operator;
@@ -166,5 +167,9 @@ public class Parameters {
 
     public static List<Integer> getNumericAttributes() {
         return numericAttributes;
+    }
+
+    public static String getMissingAttributeSymbol() {
+        return missingAttributeSymbol;
     }
 }

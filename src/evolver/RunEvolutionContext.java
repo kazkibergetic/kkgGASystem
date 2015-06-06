@@ -16,6 +16,8 @@ public class RunEvolutionContext {
     private FitnessResults fitnessOutput;
     private ExecutorService executorService;
     private Random random;
+    private String mainOutputDir;
+    private String extraOutputDir;
 
     public ExecutorService getExecutorService() {
         return executorService;
@@ -55,5 +57,21 @@ public class RunEvolutionContext {
 
     public void setRandom(Random random) {
         this.random = random;
+    }
+
+    public String getMainOutputDir() {
+        return mainOutputDir;
+    }
+
+    public void setMainOutputDir(String mainOutputDir) {
+        this.mainOutputDir = mainOutputDir;
+    }
+
+    public String getExtraOutputDir() {
+        return extraOutputDir;
+    }
+
+    public void setExtraOutputDir(String extraOutputDir) {
+        this.extraOutputDir = extraOutputDir;
     }
 }
