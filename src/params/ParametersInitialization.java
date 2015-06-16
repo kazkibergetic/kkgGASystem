@@ -177,6 +177,9 @@ public class ParametersInitialization extends Parameters {
         if (ParametersInitialization.properties.getProperty(InputParametersNames.MISSING_ATTRIBUTE_SYMBOL) != null) {
             missingAttributeSymbol = ParametersInitialization.properties.getProperty(InputParametersNames.MISSING_ATTRIBUTE_SYMBOL);
         }
+        if (ParametersInitialization.properties.getProperty(InputParametersNames.MISSING_ATTRIBUTE_ENABLE) != null) {
+            missingAttributeEnable = Boolean.parseBoolean(ParametersInitialization.properties.getProperty(InputParametersNames.MISSING_ATTRIBUTE_ENABLE));
+        }
             /*
              * ==================================================================
 			 * ================================

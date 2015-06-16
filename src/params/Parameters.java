@@ -30,6 +30,7 @@ public class Parameters {
 	protected static int binNumber;
 	protected static List<Integer> numericAttributes;
 	protected static String missingAttributeSymbol;
+	protected static boolean missingAttributeEnable;
 
 
 	protected static CrossoverInterface crossover_operator;
@@ -172,4 +173,8 @@ public class Parameters {
     public static String getMissingAttributeSymbol() {
         return missingAttributeSymbol;
     }
+
+	public static boolean isMissingAttributeEnable() {
+		return missingAttributeEnable;
+	}
 }

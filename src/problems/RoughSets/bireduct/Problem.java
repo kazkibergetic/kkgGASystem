@@ -79,9 +79,11 @@ public class Problem implements ProblemInterface {
      */
     private void readDataSet(RunEvolutionContext runEvolutionContext, File file) throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()), Charsets.UTF_8);
-        MissingAttributeInputDataEnricher enricher = new MissingAttributeInputDataEnricher();
-        lines = enricher.enrichData(lines);
-        enricher.writeMissingAttributesChanges(runEvolutionContext);
+        if (Parameters.isMissingAttributeEnable()) {
+            MissingAttributeInputDataEnricher enricher = new MissingAttributeInputDataEnricher();
+            lines = enricher.enrichData(lines);
+            enricher.writeMissingAttributesChanges(runEvolutionContext);
+        }
         String delimiter = Parameters.getDelimiter();
         for (String line : lines) {
             line = line.trim();

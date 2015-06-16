@@ -58,4 +58,6 @@ public class InputParametersNames {
 	public static final String BEST_INDIVIDUAL_OUT = "best-individual-out";
 
     public static final String MISSING_ATTRIBUTE_SYMBOL = "missing-attribute-symbol";
+
+    public static final String MISSING_ATTRIBUTE_ENABLE = "missing-attribute-enable";
 }
