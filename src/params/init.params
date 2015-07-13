@@ -1,12 +1,12 @@
-runs             				      = 5
+runs             				      = 1
 	
-generations                           = 1
+generations                           = 50
 
-population-size                       = 5
+population-size                       = 150
 
 crossover-probability                 = 0.9
 
-mutation-probability                  = 0.3
+mutation-probability                  = 0.2
 
 crossover-operator               	  = operators.crossover.OrderedCrossover
 mutation-operator                	  = operators.mutation.Inversion
@@ -22,12 +22,12 @@ tournament-size                       = 3
 
 problem								  = problems.RoughSets.bireduct.Problem
 
-input-folder						  = input/reduct
+input-folder						  = input/new
 input-files-extension				  = .data			
 
 stat-out                              = output/reduct
 
-;processors							  = 4
+processors							  = 1
 
 ;seed                                 = 1
 
@@ -39,7 +39,7 @@ name-column                           =true
 name-column-position                  =0
 decision-attribute-position           =-1
 
-elitism-size                          = 5
+elitism-size                          = 0
 
 best-individual-out                   = 5
 

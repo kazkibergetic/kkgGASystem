@@ -77,8 +77,8 @@ public class Start {
                         runEvolutionContext.setExecutorService(Executors.newFixedThreadPool(Parameters.getNumberOfProcessors()));
                         runEvolutionContext.setRandom(new Random(Parameters.getSeed()));
                         runEvolutionContext.setProblemResultCache(new ProblemResultCache());
-                        runEvolutionContext.setMainOutputDir(String.format("%s/%s/main/", Parameters.getOutputFolder(), file.getName()));
-                        runEvolutionContext.setExtraOutputDir(String.format("%s/%s/extra/", Parameters.getOutputFolder(), file.getName()));
+                        runEvolutionContext.setMainOutputDir(String.format("%s/main/%s/", Parameters.getOutputFolder(), file.getName()));
+                        runEvolutionContext.setExtraOutputDir(String.format("%s/extra/%s/", Parameters.getOutputFolder(), file.getName()));
 
                         // initialize the problem, read dataset from the provided file
                         problem.initialize(runEvolutionContext, file);

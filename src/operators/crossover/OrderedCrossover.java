@@ -30,10 +30,34 @@ public class OrderedCrossover implements CrossoverInterface {
 			ChromosomeRepresentationInterface parent2) throws ChromomesInequalityException {
 		
 		
-		
+//		System.out.println("!!!");
 			if(parent1.getSize() == parent2.getSize())
 			{
-				
+//				
+//				Parent 1: [4, 9, 3, 7, 2, 6, 8, 1, 5]
+//						Parent 2: [5, 6, 8, 2, 3, 4, 7, 1, 9]
+//								
+//				parent1.setGene(0, 4);
+//				parent1.setGene(1, 9);
+//				parent1.setGene(2, 3);
+//				parent1.setGene(3, 7);
+//				parent1.setGene(4, 2);
+//				parent1.setGene(5, 6);
+//				parent1.setGene(6, 8);
+//				parent1.setGene(7, 1);
+//				parent1.setGene(8, 5);
+//				
+//				
+//				parent2.setGene(0, 5);
+//				parent2.setGene(1, 6);
+//				parent2.setGene(2, 8);
+//				parent2.setGene(3, 2);
+//				parent2.setGene(4, 3);
+//				parent2.setGene(5, 4);
+//				parent2.setGene(6, 7);
+//				parent2.setGene(7, 1);
+//				parent2.setGene(8, 9);
+								
 				int len = parent1.getSize();
 				
 				List<ChromosomeRepresentationInterface> offsprings = new ArrayList<ChromosomeRepresentationInterface>();
@@ -48,6 +72,10 @@ public class OrderedCrossover implements CrossoverInterface {
 				int p1 = rand.nextInt(len);
 				int p2 = rand.nextInt(len);
 				
+//				System.out.println("r1: " +p1);
+//				
+//				System.out.println("r2: " +p2);
+				
 				for (int i = p1; i <= p2; ++i){					
 					offspring1.setGene(i, parent1.getGene(i));
 					offspring2.setGene(i, parent2.getGene(i));
@@ -57,6 +85,15 @@ public class OrderedCrossover implements CrossoverInterface {
 				offsprings.add(fillChild(offspring2, parent2, parent1, p1, p2));
 				
 				
+//				System.out.println("Parent 1: "+parent1.getChromosome());
+//				System.out.println("Parent 2: "+parent2.getChromosome());
+//				
+//				
+//				
+//				
+//				System.out.println("off1: "+offsprings.get(0));
+//				System.out.println("off2: "+offsprings.get(1));
+				
 
 				return offsprings;
 			}
@@ -65,7 +102,7 @@ public class OrderedCrossover implements CrossoverInterface {
 				throw new ChromomesInequalityException();
 			}
 		
-		
+			
 		
 		
 		

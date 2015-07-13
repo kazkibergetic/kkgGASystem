@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @author anthony
+ * @author Oleg Rybkin
  */
 public class SumOfRanks implements RankEvaluator {
     protected static List<String> ranks = new CopyOnWriteArrayList<>();

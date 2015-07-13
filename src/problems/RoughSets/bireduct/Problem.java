@@ -369,10 +369,10 @@ public class Problem implements ProblemInterface {
 
         String chromosomeResult = result.toString();
 
-        System.out.println(chromosome.toString());
-        System.out.println(chromosomeResult);
-        System.out.println();
-        System.out.println("-----------------------");
+//        System.out.println(chromosome.toString());
+//        System.out.println(chromosomeResult);
+//        System.out.println();
+//        System.out.println("-----------------------");
 
         ProblemResultCache problemResultCache = runEvolutionContext.getProblemResultCache();
         problemResultCache.putResults(chromosome, chromosomeResult);
