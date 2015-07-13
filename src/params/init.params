@@ -13,7 +13,7 @@ mutation-operator                	  = operators.mutation.Inversion
 
 chromosome-representation			  = chromosome.IntegerBasedChromosome
 
-fitness-function                      = fitness.multiObjective.ParetoRankEvaluator
+fitness-function                      = fitness.singleObjective.WeightedSum
 selection-operator                    = operators.selection.TournamentSelection
 
 discretization-method                 = discretization.EqualWidthBinning
