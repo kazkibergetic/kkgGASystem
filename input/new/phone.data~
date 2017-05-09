@@ -1,9 +1,0 @@
-$x_1$,low,6,small,16,Android,5,high
-$x_2$,medium,6,small,32,iOS,5,low
-$x_3$,medium,6,large,8,Windows,5,low
-$x_4$,high,6,large,16,Android,5,low
-$x_5$,high,12,small,8,Android,3,low
-$x_6$,low,18,large,8,Windows,5,low
-$x_7$,low,24,small,32,Android,5,high
-$x_8$,medium,18,small,32,iOS,5,high
-$x_9$,high,12,small,8,Windows,5,high
